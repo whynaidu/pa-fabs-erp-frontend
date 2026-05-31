@@ -2477,8 +2477,9 @@ async function saveMfg() {
     DB.mfgs = await fetchAPI('/manufacturing');
     DB.looms = await fetchAPI('/looms');
     DB.loomAllocs = await fetchAPI('/looms/allocations').catch(()=>[]);
+    DB.inventory = await fetchAPI('/inventory-inward').catch(()=>[]);
     clearMfgForm(); renderMfgTable(); renderLoomGrid('userLoomGrid'); populateLoomDropdowns();
-    showToast(isDone?'Manufacturing completed & Loom freed — '+metres+'m added':'Manufacturing updated — '+metres+'m added');
+    showToast(isDone?'Weaving complete — '+metres+'m added (loom frees on delivery)':'Manufacturing updated — '+metres+'m added');
   } catch (error) {
     console.error('Mfg save error:', error);
     showToast('Failed to save manufacturing: ' + error.message);
@@ -2691,12 +2692,13 @@ function previewDCSlip() {
   document.getElementById('dcSlipPreview').style.display='block';
 }
 function clearDeliveryForm() {
-  ['delPO','delCustomer','delVehicle','delDriver','delReceiver','delRemarks'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['delDesignNo','delReedPick','delCount','delColour','delNoPieces','delGrandTotal'].forEach(id=>{document.getElementById(id).textContent='—';});
-  document.getElementById('delCycleDisplay').textContent='—';
-  document.getElementById('delDCNumber').textContent='Auto-generated: DC-'+(DB.dcCounter?String(DB.dcCounter+1).padStart(4,'0'):'0001');
-  document.getElementById('delPieceBody').innerHTML='<tr><td colspan="4"><div class="empty-state"><p>Enter PO Number to load pieces</p></div></td></tr>';
-  document.getElementById('dcSlipPreview').style.display='none';
+  ['delPO','delCustomer','delVehicle','delDriver','delReceiver','delRemarks','delDesignNo','delReedPick'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['delCount','delColour','delNoPieces','delGrandTotal','delPODesc'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  const setTxt=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
+  setTxt('delCycleDisplay','—');
+  setTxt('delDCNumber','Auto-generated: DC-'+(DB.dcCounter?String(DB.dcCounter+1).padStart(4,'0'):'0001'));
+  const pb=document.getElementById('delPieceBody'); if(pb) pb.innerHTML='<tr><td colspan="4"><div class="empty-state"><p>Enter PO Number to load pieces</p></div></td></tr>';
+  const slip=document.getElementById('dcSlipPreview'); if(slip) slip.style.display='none';
 }
 function renderDeliveryTable() {
   const tbody=document.getElementById('myDeliveryBody');
