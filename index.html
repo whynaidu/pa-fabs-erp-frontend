@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PA FABS — Textile ERP System</title>
 <script src="config.js"></script>
+<script>
+  // Before first paint: if a session token exists, hide the login screen so the
+  // user isn't flashed the login form while restoreSession() validates the token.
+  if (localStorage.getItem('token')) document.documentElement.classList.add('restoring-session');
+</script>
+<style>
+  html.restoring-session #loginScreen { display: none !important; }
+  html.restoring-session #bootLoader { display: flex !important; }
+  #bootLoader { display: none; position: fixed; inset: 0; z-index: 99999;
+    align-items: center; justify-content: center; background: #F7F4F1;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #1B4332;
+    font-weight: 600; font-size: 15px; letter-spacing: .3px; }
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -596,6 +609,8 @@ input, select, textarea, button { font-family: inherit; }
 </style>
 </head>
 <body>
+
+<div id="bootLoader">Restoring your session…</div>
 
 <!-- ════════════════════════════════════════════════════ LOGIN -->
 <div id="loginScreen">
@@ -1750,7 +1765,8 @@ function enterApp(role) {
 // signed in. Falls back to the login screen if the token is missing/expired.
 async function restoreSession() {
   const token = localStorage.getItem('token');
-  if (!token) return;
+  const done = () => document.documentElement.classList.remove('restoring-session');
+  if (!token) { done(); return; }
   try {
     const me = await fetchAPI('/me');           // 401 if expired -> caught below
     DB.currentUser = me.fullName;
@@ -1760,6 +1776,9 @@ async function restoreSession() {
     enterApp(me.role);
   } catch (e) {
     localStorage.removeItem('token');           // expired/invalid -> show login
+    document.getElementById('loginScreen').style.display = 'flex';
+  } finally {
+    done();
   }
 }
 if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', restoreSession);
