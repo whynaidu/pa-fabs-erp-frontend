@@ -2147,11 +2147,17 @@ function populateInwardFromPO() {
   populateSelectEl('inWarpColourSelect',[...new Set(po.warpRows.map(w=>w.colour).filter(Boolean))]);
   populateSelectEl('inWeftCountSelect',[...new Set(po.weftRows.map(w=>w.count).filter(Boolean))]);
   populateSelectEl('inWeftColourSelect',[...new Set(po.weftRows.map(w=>w.colour).filter(Boolean))]);
+  // also fill the count/colour text fields if present on this PO
+  setIfExists('inReedPick', (po.reed||'') + (po.pick? '×'+po.pick : ''));
 }
+function setIfExists(id, val){ const e=document.getElementById(id); if(e){ if('value' in e) e.value=val; else e.textContent=val||'—'; } }
 function populateSelectEl(id, opts) {
   const s=document.getElementById(id);
+  if(!s) return;
   const pfx=s.options[0].text;
   s.innerHTML=`<option value="">${pfx}</option>`+opts.map(o=>`<option value="${o}">${o}</option>`).join('');
+  // auto-select when the PO offers exactly one value
+  if(opts.length===1) s.value=opts[0];
 }
 async function saveInward() {
   const poNum=document.getElementById('inPO').value.trim();
@@ -2414,6 +2420,7 @@ function populateLoomFromPO() {
   const beams=DB.beams.filter(b=>b.poNumber===poNum&&b.status==='available');
   const s=document.getElementById('laBeamId');
   s.innerHTML='<option value="">— Select Beam —</option>'+beams.map(b=>`<option value="${b.beamNumber}">${b.beamNumber} (${b.beamMetres}m)</option>`).join('');
+  if(beams.length===1) s.value=beams[0].beamNumber;   // auto-select the only beam
   // Populate weft rows and PO description
   const po=DB.pos.find(p=>p.poNumber===poNum);
   if(po){
@@ -2591,16 +2598,33 @@ function renderInvTable() {
 function populateDeliveryFromPO() {
   const poNum=document.getElementById('delPO').value.trim();
   const po=DB.pos.find(p=>p.poNumber===poNum);
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
-  if(po) {
-    document.getElementById('delPODesc').textContent=po.description||'—';
-  } else {
-    document.getElementById('delPODesc').textContent='—';
+  setIfExists('delPODesc', po ? (po.description||'—') : '—');
+  // latest cycle for this PO
+  const inward=DB.inwards.filter(i=>i.poNumber===poNum).sort((a,b)=>b.cycleNumber-a.cycleNumber)[0];
+  const cycle = inward ? inward.cycleNumber : null;
+  setIfExists('delCycleDisplay', cycle ? 'Cycle '+cycle : '—');
+  if(po){
+    setIfExists('delCustomer', po.purchaser||'');
+    setIfExists('delDesignNo', po.poNumber);
+    setIfExists('delReedPick', (po.reed||'') + (po.pick ? '×'+po.pick : ''));
+    setIfExists('delDescription', po.description||'');
   }
-  if(inward) {
-    document.getElementById('delCycleDisplay').textContent='Cycle '+inward.cycleNumber;
+  // Auto-build the piece table from finished-fabric (inventory) for this PO+cycle.
+  const inv = DB.inventory.filter(x=>x.poNumber===poNum && (cycle==null || x.cycleNumber===cycle));
+  const body=document.getElementById('delPieceBody');
+  if(body){
+    body.innerHTML = inv.length
+      ? inv.map((x,i)=>`<tr>
+          <td><input type="text" class="piece-type" value="Fabric" /></td>
+          <td><input type="text" class="piece-no" value="${i+1}" /></td>
+          <td><input type="number" class="piece-metres" value="${x.fabricMetres}" /></td>
+          <td><button class="btn-remove-beam" onclick="this.closest('tr').remove()">×</button></td>
+        </tr>`).join('')
+      : '<tr><td colspan="4"><div class="empty-state"><p>No finished fabric yet for this PO/cycle — complete weaving first.</p></div></td></tr>';
   }
-  document.getElementById('delCustomer').value=po?po.purchaser||'':'';
+  const total = inv.reduce((s,x)=>s+(parseFloat(x.fabricMetres)||0),0);
+  setIfExists('delNoPieces', String(inv.length));
+  setIfExists('delGrandTotal', total ? total+' m' : '0');
 }
 async function saveDelivery() {
   const poNum=document.getElementById('delPO').value.trim();
