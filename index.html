@@ -1713,24 +1713,7 @@ async function doLogin() {
       await loadAllData();
       DB.currentUser = response.user.fullName;
       DB.currentRole = currentRole;
-
-      if (currentRole === 'admin') {
-        document.getElementById('loginScreen').style.display='none';
-        document.getElementById('adminApp').classList.add('active');
-        renderAdminDashboard(); renderLoomGrid('adminLoomGrid');
-      } else {
-        document.getElementById('loginScreen').style.display='none';
-        document.getElementById('userApp').classList.add('active');
-        document.getElementById('mfgLogDate').value=todayISO();
-        document.getElementById('delDate').value=todayISO();
-        document.getElementById('inEntryDate').value=todayISO();
-        document.getElementById('laDate').value=todayISO();
-        renderUserDashboard(); renderUserTables();
-        renderLoomGrid('userLoomGrid');
-        populateLoomDropdowns();
-        document.querySelectorAll('#userApp .nav-item').forEach(n=>n.classList.remove('active'));
-        document.querySelectorAll('#userApp .nav-item')[0].classList.add('active');
-      }
+      enterApp(currentRole);
     } else {
       showToast('Invalid credentials or user not approved');
     }
@@ -1739,6 +1722,48 @@ async function doLogin() {
     showToast('Login failed: ' + error.message);
   }
 }
+
+// Shows the correct app shell + renders it. Shared by login and session restore.
+function enterApp(role) {
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('registerScreen').style.display='none';
+  if (role === 'admin') {
+    document.getElementById('userApp').classList.remove('active');
+    document.getElementById('adminApp').classList.add('active');
+    renderAdminDashboard(); renderLoomGrid('adminLoomGrid');
+  } else {
+    document.getElementById('adminApp').classList.remove('active');
+    document.getElementById('userApp').classList.add('active');
+    document.getElementById('mfgLogDate').value=todayISO();
+    document.getElementById('delDate').value=todayISO();
+    document.getElementById('inEntryDate').value=todayISO();
+    document.getElementById('laDate').value=todayISO();
+    renderUserDashboard(); renderUserTables();
+    renderLoomGrid('userLoomGrid');
+    populateLoomDropdowns();
+    document.querySelectorAll('#userApp .nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('#userApp .nav-item')[0].classList.add('active');
+  }
+}
+
+// On page load, restore the session from the stored JWT so a refresh keeps you
+// signed in. Falls back to the login screen if the token is missing/expired.
+async function restoreSession() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const me = await fetchAPI('/me');           // 401 if expired -> caught below
+    DB.currentUser = me.fullName;
+    DB.currentRole = me.role;
+    currentRole = me.role;
+    await loadAllData();
+    enterApp(me.role);
+  } catch (e) {
+    localStorage.removeItem('token');           // expired/invalid -> show login
+  }
+}
+if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', restoreSession);
+else restoreSession();
 function logout() {
   localStorage.removeItem('token');
   document.getElementById('loginScreen').style.display='flex';
