@@ -2567,7 +2567,7 @@ function saveInventoryInward() {
   const dt=document.getElementById('invReceivedDate').value;
   if(!poNum||!loomNum||metres<=0||!dt){showToast('PO, Loom, Metres and Date required');return;}
   const loom=DB.looms.find(l=>l.loomNumber===loomNum);
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
+  const inward=latestInward(poNum);
   DB.inventory.push({
     id:uid(), poNumber:poNum, cycleNumber:inward?inward.cycleNumber:1,
     loomNumber:loomNum, beamId:loom?loom.currentBeam:'—',
@@ -2653,7 +2653,7 @@ async function saveDelivery() {
     DB.dcCounter++;
     const dcNum='DC-'+String(DB.dcCounter).padStart(4,'0');
 
-    const inward=DB.inwards.find(i=>i.poNumber===poNum);
+    const inward=latestInward(poNum);
     const cycle=inward?inward.cycleNumber:1;
 
     const response = await fetchAPI('/deliveries', {
@@ -2703,7 +2703,7 @@ function addDeliveryPieceRow() {
 }
 function previewDCSlip() {
   const poNum=document.getElementById('delPO').value.trim();
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
+  const inward=latestInward(poNum);
   const cycle=inward?inward.cycleNumber:1;
   const dcNum='DC-'+String(DB.dcCounter+1).padStart(4,'0')+'(Preview)';
 
@@ -2937,7 +2937,7 @@ function renderAdminDashboard() {
     <div style="font-size:11px;color:var(--text2);margin-top:4px;">${Math.round(occ/18*100)}% utilisation</div>`;
   const cycleBody=document.getElementById('adminActiveCycleBody');
   cycleBody.innerHTML=DB.pos.filter(p=>p.status!=='complete').slice(0,8).map(po=>{
-    const inward=DB.inwards.find(i=>i.poNumber===po.poNumber);
+    const inward=latestInward(po.poNumber);
     const cycle=inward?inward.cycleNumber:0;
     const inv=DB.inventory.filter(v=>v.poNumber===po.poNumber);
     const mfgDone=inv.reduce((s,v)=>s+v.fabricMetres,0);
