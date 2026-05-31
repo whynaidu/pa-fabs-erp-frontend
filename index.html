@@ -1661,7 +1661,7 @@ async function loadAllData() {
     safe('/beams'),
     safe('/looms/allocations'),
     safe('/manufacturing'),
-    safe('/inventory'),
+    safe('/inventory-inward'),
     safe('/deliveries'),
     safe('/users'),
     safe('/looms'),
@@ -1679,9 +1679,8 @@ async function loadAllData() {
   DB.users = users || [];
   DB.looms = looms || [];
 
-  // Get DC counter
-  const counterResult = await fetchAPI('/deliveries/counter').catch(() => ({ counter: 0 }));
-  DB.dcCounter = counterResult.counter || 0;
+  // DC numbers are generated server-side on delivery; keep a local fallback only.
+  DB.dcCounter = DB.deliveries.length;
 
   console.log('All data loaded');
 }
