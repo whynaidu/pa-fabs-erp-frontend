@@ -1593,11 +1593,38 @@ const DB = {
   dcCounter: 0,
 };
 
+// Best-effort local cache for legacy callers. The backend is the source of truth.
+function save(key) { try { localStorage.setItem('DB_' + key, JSON.stringify(DB[key] || [])); } catch (e) {} }
+
 // API Helper Functions
+// Recursively convert date-only strings (YYYY-MM-DD) to datetimes the API accepts.
+function coerceDates(v) {
+  if (typeof v === 'string') return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v + 'T00:00:00' : v;
+  if (Array.isArray(v)) return v.map(coerceDates);
+  if (v && typeof v === 'object') { const o = {}; for (const k in v) o[k] = coerceDates(v[k]); return o; }
+  return v;
+}
+// The UI speaks camelCase; the API speaks snake_case. Translate keys both ways
+// so existing form/render code works unchanged. Values are left untouched.
+function _convertKeys(v, fn) {
+  if (Array.isArray(v)) return v.map(x => _convertKeys(x, fn));
+  if (v && typeof v === 'object' && v.constructor === Object) {
+    const o = {}; for (const k in v) o[fn(k)] = _convertKeys(v[k], fn); return o;
+  }
+  return v;
+}
+const _toSnake = k => k.replace(/([A-Z])/g, '_$1').toLowerCase();
+const _toCamel = k => k.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+const keysToSnake = v => _convertKeys(v, _toSnake);
+const keysToCamel = v => _convertKeys(v, _toCamel);
+
 async function fetchAPI(endpoint, options = {}) {
   try {
     const url = `${API_BASE}${endpoint}`;
     const token = localStorage.getItem('token');
+    if (options.body && typeof options.body === 'string') {
+      try { options = { ...options, body: JSON.stringify(keysToSnake(coerceDates(JSON.parse(options.body)))) }; } catch (e) {}
+    }
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -1611,7 +1638,7 @@ async function fetchAPI(endpoint, options = {}) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json();
+    return keysToCamel(await response.json());
   } catch (error) {
     console.error(`API call failed: ${endpoint}`, error);
     throw error;
@@ -1628,8 +1655,8 @@ async function loadAllData() {
     safe('/outwards'),
     safe('/returns'),
     safe('/beams'),
-    safe('/loom-allocs'),
-    safe('/mfgs'),
+    safe('/looms/allocations'),
+    safe('/manufacturing'),
     safe('/inventory'),
     safe('/deliveries'),
     safe('/users'),
@@ -1672,26 +1699,16 @@ async function doLogin() {
   const p = document.getElementById('loginPass').value.trim();
 
   try {
-    // Admin login with hardcoded credentials
-    if (currentRole==='admin' && u==='admin' && p==='admin') {
-      await loadAllData();
-      DB.currentUser='Admin'; DB.currentRole='admin';
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('adminApp').classList.add('active');
-      renderAdminDashboard(); renderLoomGrid('adminLoomGrid');
-      return;
-    }
-
-    // API-based login for all users
+    // API-based login for all users (admin + staff). The server issues the JWT.
     const response = await fetchAPI('/login', {
       method: 'POST',
       body: JSON.stringify({ username: u, password: p, role: currentRole }),
     });
 
-    if (response.access_token) {
-      localStorage.setItem('token', response.access_token);
+    if (response.accessToken) {
+      localStorage.setItem('token', response.accessToken);
       await loadAllData();
-      DB.currentUser = response.user.full_name;
+      DB.currentUser = response.user.fullName;
       DB.currentRole = currentRole;
 
       if (currentRole === 'admin') {
@@ -1720,6 +1737,7 @@ async function doLogin() {
   }
 }
 function logout() {
+  localStorage.removeItem('token');
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('registerScreen').style.display='none';
   document.getElementById('adminApp').classList.remove('active');
@@ -1750,7 +1768,7 @@ function updateRegSteps(cur) {
     if(i+1<cur) l.classList.add('completed'); else if(i+1===cur) l.classList.add('active');
   });
 }
-function completeRegistration() {
+async function completeRegistration() {
   const pass = document.getElementById('regPassword').value.trim();
   const confirmPass = document.getElementById('regConfirmPassword').value.trim();
 
@@ -1764,19 +1782,24 @@ function completeRegistration() {
     return;
   }
 
-  DB.users.push({
-    fullName: document.getElementById('regFullName').value||'New User',
-    username: document.getElementById('regUsername').value||'newuser',
-    password: pass,
-    email: document.getElementById('regEmail').value||'—',
-    department: document.getElementById('regDepartment').value||'—',
-    role: document.getElementById('regRole').value||'—',
-    status: 'pending',
-    createdAt: todayISO()
-  });
-  save('users');
-  showToast('Registered! Awaiting Admin approval.');
-  setTimeout(showLogin, 1500);
+  try {
+    await fetchAPI('/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        full_name: document.getElementById('regFullName').value || 'New User',
+        username: document.getElementById('regUsername').value || 'newuser',
+        password: pass,
+        email: document.getElementById('regEmail').value || '',
+        phone: document.getElementById('regPhone') ? document.getElementById('regPhone').value : null,
+        department: document.getElementById('regDepartment').value || null,
+        role: document.getElementById('regRole').value || 'user',
+      }),
+    });
+    showToast('Registered! Awaiting Admin approval.');
+    setTimeout(showLogin, 1500);
+  } catch (e) {
+    showToast('Registration failed: ' + e.message);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2026,7 +2049,7 @@ async function savePODetails() {
       body: JSON.stringify(po),
     });
 
-    if (response.success) {
+    if (response) {
       // Reload POs
       DB.pos = await fetchAPI('/pos');
       clearPOForm(); renderPOTable();
@@ -2113,9 +2136,9 @@ async function saveInward() {
       }),
     });
 
-    if (response.success) {
+    if (response) {
       DB.inwards = await fetchAPI('/inwards');
-      const cycle = response.data.cycle_number;
+      const cycle = response.cycleNumber;
       clearInwardForm(); renderInwardTable();
       showToast('Inward saved — Cycle '+cycle);
     }
@@ -2170,7 +2193,7 @@ function populateOutwardFromPO() {
     document.getElementById('outwardWeftRowsContainer').innerHTML='';
   }
 }
-function saveOutward() {
+async function saveOutward() {
   const poNum=document.getElementById('outPO').value.trim();
   const proc=document.getElementById('outwardProcess').value;
   const op=document.getElementById('outOperator').value.trim();
@@ -2179,33 +2202,25 @@ function saveOutward() {
   if(!proc){showToast('Process Type required');return;}
   if(!op){showToast('Operator Name required');return;}
   if(!dt){showToast('Outward Date required');return;}
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
-  const warpRows=[];
-  document.querySelectorAll('#outwardWarpRowsContainer .dynamic-row').forEach(r=>{
-    const c=r.querySelector('.outward-warp-count')?.value, col=r.querySelector('.outward-warp-colour')?.value;
-    const m=parseFloat(r.querySelector('.outward-warp-metres')?.value)||0;
-    const cones=parseInt(r.querySelector('.outward-warp-cones')?.value)||0;
-    if(c||col) warpRows.push({count:c,colour:col,metres:m,cones:cones});
-  });
-  const weftRows=[];
-  document.querySelectorAll('#outwardWeftRowsContainer .dynamic-row').forEach(r=>{
-    const c=r.querySelector('.outward-weft-count')?.value, col=r.querySelector('.outward-weft-colour')?.value;
-    const kg=parseFloat(r.querySelector('.outward-weft-kg')?.value)||0;
-    const cones=parseInt(r.querySelector('.outward-weft-cones')?.value)||0;
-    if(c||col) weftRows.push({count:c,colour:col,qtyKg:kg,cones:cones});
-  });
-  DB.outwards.push({
-    id:uid(), poNumber:poNum, cycleNumber:inward?inward.cycleNumber:1, processType:proc,
-    operatorName:op, warpRows, weftRows,
-    warpMetres:parseFloat(document.getElementById('outWarpMetres').value)||0,
-    warpCones:parseInt(document.getElementById('outWarpCones').value)||0,
-    beamsExpected:parseInt(document.getElementById('outBeamsExpected').value)||0,
-    weftCones:parseInt(document.getElementById('outWeftCones').value)||0,
-    outwardDate:dt, expectedReturn:document.getElementById('outExpReturn').value,
-    isDone:document.getElementById('outwardCheck').classList.contains('checked'),
-    createdBy:DB.currentUser
-  });
-  save('outwards'); clearOutwardForm(); renderOutwardTable(); showToast('Outward saved');
+  try {
+    await fetchAPI('/outwards', {
+      method: 'POST',
+      body: JSON.stringify({
+        poNumber:poNum, processType:proc, operatorName:op,
+        warpMetres:parseFloat(document.getElementById('outWarpMetres').value)||0,
+        warpCones:parseInt(document.getElementById('outWarpCones').value)||0,
+        weftCones:parseInt(document.getElementById('outWeftCones').value)||0,
+        beamsExpected:parseInt(document.getElementById('outBeamsExpected').value)||0,
+        outwardDate:dt, expectedReturn:document.getElementById('outExpReturn').value||null,
+        isDone:document.getElementById('outwardCheck').classList.contains('checked')
+      }),
+    });
+    DB.outwards = await fetchAPI('/outwards');
+    clearOutwardForm(); renderOutwardTable(); showToast('Outward saved');
+  } catch (error) {
+    console.error('Outward save error:', error);
+    showToast('Failed to save outward: ' + error.message);
+  }
 }
 function clearOutwardForm() {
   ['outPO','outWarpMetres','outWarpCones','outBeamsExpected','outWeftCones','outOperator','outDate','outExpReturn'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
@@ -2309,11 +2324,11 @@ async function saveReturn() {
       }),
     });
 
-    if (response.success) {
+    if (response) {
       DB.returns = await fetchAPI('/returns');
-      DB.beams = await fetchAPI('/beams');
+      DB.beams = await fetchAPI('/beams').catch(()=>[]);
       clearReturnForm(); renderReturnTable();
-      showToast(retType==='warping_return'?`Return saved. Beams generated: ${response.beamIds.join(', ')}`:'Return saved');
+      showToast('Return saved');
     }
   } catch (error) {
     console.error('Return save error:', error);
@@ -2363,36 +2378,34 @@ function populateLoomFromPO() {
     document.getElementById('laPODesc').textContent='—';
   }
 }
-function saveLoomAlloc() {
+async function saveLoomAlloc() {
   const poNum=document.getElementById('laPoNum').value.trim();
   const beamId=document.getElementById('laBeamId').value;
   const loomNum=parseInt(document.getElementById('laLoomNum').value);
   if(!poNum||!beamId||!loomNum){showToast('PO, Beam and Loom required');return;}
-  const loom=DB.looms.find(l=>l.loomNumber===loomNum);
-  if(loom.status!=='free'){showToast('Loom '+loomNum+' is not free');return;}
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
-  const cycle=inward?inward.cycleNumber:1;
   const weftRows=[];
   document.querySelectorAll('#loomWeftRowsContainer .dynamic-row').forEach(r=>{
     const c=r.querySelector('.loom-weft-count')?.value, col=r.querySelector('.loom-weft-colour')?.value;
-    if(c||col) weftRows.push({count:c,colour:col});
+    if(c||col) weftRows.push(`${c}${col?':'+col:''}`);
   });
-  // Update loom master
-  loom.status='occupied'; loom.currentPO=poNum; loom.currentCycle=cycle;
-  loom.currentBeam=beamId; loom.allocatedBy=DB.currentUser; loom.allocatedAt=todayISO();
-  save('looms');
-  // Mark beam as allocated
-  const beam=DB.beams.find(b=>b.beamNumber===beamId&&b.poNumber===poNum);
-  if(beam){beam.status='allocated';save('beams');}
-  DB.loomAllocs.push({
-    id:uid(), poNumber:poNum, cycleNumber:cycle, beamId:beamId, loomNumber:loomNum,
-    weftRows:weftRows,
-    allocationDate:document.getElementById('laDate').value||todayISO(),
-    expectedDone:document.getElementById('laExpDone').value,
-    status:'active', submittedBy:DB.currentUser
-  });
-  save('loomAllocs'); clearLoomForm(); renderLoomAllocTable(); renderLoomGrid('userLoomGrid'); populateLoomDropdowns();
-  showToast('Loom '+loomNum+' allocated to '+beamId);
+  try {
+    await fetchAPI('/looms/allocate', {
+      method: 'POST',
+      body: JSON.stringify({
+        poNumber:poNum, beamId:beamId, loomNumber:loomNum,
+        weftDetails:weftRows.join(', '),
+        expectedDone:document.getElementById('laExpDone').value||null
+      }),
+    });
+    DB.looms = await fetchAPI('/looms');
+    DB.beams = await fetchAPI('/beams').catch(()=>[]);
+    DB.loomAllocs = await fetchAPI('/looms/allocations').catch(()=>[]);
+    clearLoomForm(); renderLoomAllocTable(); renderLoomGrid('userLoomGrid'); populateLoomDropdowns();
+    showToast('Loom '+loomNum+' allocated to '+beamId);
+  } catch (error) {
+    console.error('Loom alloc error:', error);
+    showToast('Failed to allocate loom: ' + error.message);
+  }
 }
 function clearLoomForm() {
   ['laPoNum','laDate','laExpDone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
@@ -2437,47 +2450,36 @@ function loadMfgFromLoom() {
   document.getElementById('mfgProgressLabel').textContent=pct+'% complete';
   document.getElementById('mfgDetails').style.display='block';
 }
-function saveMfg() {
+async function saveMfg() {
   const loomNum=parseInt(document.getElementById('mfgLoomNum').value);
   const metres=parseFloat(document.getElementById('mfgMetresToday').value)||0;
   const fabricMetres=parseFloat(document.getElementById('mfgFabricMetres').value)||0;
   if(!loomNum){showToast('Select a loom');return;}
   if(metres<=0){showToast('Metres produced must be >0');return;}
   if(fabricMetres<=0){showToast('Fabric metres must be >0');return;}
-  const loom=DB.looms.find(l=>l.loomNumber===loomNum);
-  const po=DB.pos.find(p=>p.poNumber===loom.currentPO);
-  const prevTotal=DB.mfgs.filter(m=>m.loomNumber===loomNum).reduce((s,m)=>s+m.metresToday,0);
-  const newTotal=prevTotal+metres;
-  const balance=(po?po.orderQty:0)-newTotal;
   const isDone=document.getElementById('mfgDoneCheck').classList.contains('checked');
-  DB.mfgs.push({
-    id:uid(), poNumber:loom.currentPO, cycleNumber:loom.currentCycle,
-    loomNumber:loomNum, beamId:loom.currentBeam,
-    metresToday:metres, totalManufactured:newTotal, balanceQty:balance, fabricMetres:fabricMetres,
-    logDate:document.getElementById('mfgLogDate').value||todayISO(),
-    operatorName:document.getElementById('mfgOperator').value.trim(),
-    receivedDate:document.getElementById('mfgReceivedDate').value||todayISO(),
-    receivedBy:document.getElementById('mfgReceivedBy').value.trim(),
-    remarks:document.getElementById('mfgRemarks').value.trim(),
-    isDone:isDone, createdBy:DB.currentUser
-  });
-  DB.inventory.push({
-    id:uid(), poNumber:loom.currentPO, cycleNumber:loom.currentCycle,
-    loomNumber:loomNum, beamId:loom.currentBeam, fabricMetres:fabricMetres,
-    receivedDate:document.getElementById('mfgReceivedDate').value||todayISO(),
-    receivedBy:document.getElementById('mfgReceivedBy').value.trim(),
-    remarks:document.getElementById('mfgRemarks').value.trim(), createdBy:DB.currentUser
-  });
-  save('mfgs'); save('inventory');
-  if(isDone) {
-    const alloc=DB.loomAllocs.find(a=>a.loomNumber===loomNum&&a.status==='active');
-    if(alloc){alloc.status='completed';save('loomAllocs');}
-    // Free the loom immediately when manufacturing is done
-    loom.status='free'; loom.currentPO=null; loom.currentCycle=null; loom.currentBeam=null; loom.allocatedBy=null; loom.allocatedAt=null;
-    save('looms');
+  try {
+    await fetchAPI('/manufacturing', {
+      method: 'POST',
+      body: JSON.stringify({
+        loomNumber:loomNum, metresToday:metres, fabricMetres:fabricMetres,
+        logDate:document.getElementById('mfgLogDate').value||todayISO(),
+        operatorName:document.getElementById('mfgOperator').value.trim(),
+        receivedDate:document.getElementById('mfgReceivedDate').value||null,
+        receivedBy:document.getElementById('mfgReceivedBy').value.trim(),
+        remarks:document.getElementById('mfgRemarks').value.trim(),
+        isDone:isDone
+      }),
+    });
+    DB.mfgs = await fetchAPI('/manufacturing');
+    DB.looms = await fetchAPI('/looms');
+    DB.loomAllocs = await fetchAPI('/looms/allocations').catch(()=>[]);
+    clearMfgForm(); renderMfgTable(); renderLoomGrid('userLoomGrid'); populateLoomDropdowns();
+    showToast(isDone?'Manufacturing completed & Loom freed — '+metres+'m added':'Manufacturing updated — '+metres+'m added');
+  } catch (error) {
+    console.error('Mfg save error:', error);
+    showToast('Failed to save manufacturing: ' + error.message);
   }
-  clearMfgForm(); renderMfgTable(); renderLoomGrid('userLoomGrid'); populateLoomDropdowns();
-  showToast(isDone?'Manufacturing completed & Loom freed — '+metres+'m added':'Manufacturing updated — '+metres+'m added');
 }
 function clearMfgForm() {
   document.getElementById('mfgLoomNum').selectedIndex=0;
@@ -2602,11 +2604,12 @@ async function saveDelivery() {
       }),
     });
 
-    if (response.success) {
+    if (response) {
       DB.deliveries = await fetchAPI('/deliveries');
       DB.pos = await fetchAPI('/pos');
-      clearDeliveryForm(); renderDeliveryTable();
-      showToast('Delivery saved — '+dcNum);
+      DB.looms = await fetchAPI('/looms');
+      clearDeliveryForm(); renderDeliveryTable(); renderLoomGrid('userLoomGrid');
+      showToast('Delivery saved — '+(response.dcNumber||dcNum));
     }
   } catch (error) {
     console.error('Delivery save error:', error);
@@ -2987,8 +2990,16 @@ function renderUserMgmt() {
     </td>
   </tr>`).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No users</p></div></td></tr>';
 }
-function approveUser(idx){DB.users[idx].status='approved';save('users');renderUserMgmt();showToast('User approved');}
-function rejectUser(idx){DB.users[idx].status='rejected';save('users');renderUserMgmt();showToast('User rejected');}
+async function approveUser(idx){
+  const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
+  try{ await fetchAPI(`/users/${u.id}/approve`,{method:'PUT'}); DB.users=await fetchAPI('/users'); renderUserMgmt(); showToast('User approved'); }
+  catch(e){ showToast('Approve failed: '+e.message); }
+}
+async function rejectUser(idx){
+  const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
+  try{ await fetchAPI(`/users/${u.id}/reject`,{method:'PUT'}); DB.users=await fetchAPI('/users'); renderUserMgmt(); showToast('User rejected'); }
+  catch(e){ showToast('Reject failed: '+e.message); }
+}
 
 function showPODetail(poNum) {
   const po=DB.pos.find(p=>p.poNumber===poNum);
