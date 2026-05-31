@@ -2150,7 +2150,9 @@ function populateInwardFromPO() {
   // also fill the count/colour text fields if present on this PO
   setIfExists('inReedPick', (po.reed||'') + (po.pick? '×'+po.pick : ''));
 }
-function setIfExists(id, val){ const e=document.getElementById(id); if(e){ if('value' in e) e.value=val; else e.textContent=val||'—'; } }
+function setIfExists(id, val){ const e=document.getElementById(id); if(e){ if('value' in e) e.value=val; else e.textContent=(val===''||val==null)?'—':val; } }
+// The newest cycle for a PO (highest cycle_number), shared by all the form pre-fills.
+function latestInward(poNum){ return DB.inwards.filter(i=>i.poNumber===poNum).sort((a,b)=>b.cycleNumber-a.cycleNumber)[0]; }
 function populateSelectEl(id, opts) {
   const s=document.getElementById(id);
   if(!s) return;
@@ -2230,7 +2232,7 @@ function handleOutwardProcessChange() {
 function populateOutwardFromPO() {
   const poNum=document.getElementById('outPO').value.trim();
   const po=DB.pos.find(p=>p.poNumber===poNum);
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
+  const inward=latestInward(poNum);
   if(inward) document.getElementById('outCycleDisplay').textContent='Cycle '+inward.cycleNumber;
   if(po) {
     document.getElementById('outPODesc').textContent=po.description||'—';
@@ -2415,7 +2417,7 @@ function renderReturnTable() {
 // ════════════════════════════════════════════════════════════════
 function populateLoomFromPO() {
   const poNum=document.getElementById('laPoNum').value.trim();
-  const inward=DB.inwards.find(i=>i.poNumber===poNum);
+  const inward=latestInward(poNum);
   if(inward) document.getElementById('laCycleDisplay').textContent='Cycle '+inward.cycleNumber;
   const beams=DB.beams.filter(b=>b.poNumber===poNum&&b.status==='available');
   const s=document.getElementById('laBeamId');
@@ -2623,8 +2625,8 @@ function populateDeliveryFromPO() {
       : '<tr><td colspan="4"><div class="empty-state"><p>No finished fabric yet for this PO/cycle — complete weaving first.</p></div></td></tr>';
   }
   const total = inv.reduce((s,x)=>s+(parseFloat(x.fabricMetres)||0),0);
-  setIfExists('delNoPieces', String(inv.length));
-  setIfExists('delGrandTotal', total ? total+' m' : '0');
+  setIfExists('delNoPieces', inv.length);       // numeric — these are <input type=number>
+  setIfExists('delGrandTotal', total || 0);
 }
 async function saveDelivery() {
   const poNum=document.getElementById('delPO').value.trim();
@@ -2760,8 +2762,8 @@ function previewDCSlip() {
   document.getElementById('dcSlipPreview').style.display='block';
 }
 function clearDeliveryForm() {
-  ['delPO','delCustomer','delVehicle','delDriver','delReceiver','delRemarks','delDesignNo','delReedPick'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['delCount','delColour','delNoPieces','delGrandTotal','delPODesc'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  ['delPO','delCustomer','delVehicle','delDriver','delReceiver','delRemarks','delDesignNo','delReedPick','delNoPieces','delGrandTotal','delDescription'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['delCount','delColour','delPODesc'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
   const setTxt=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
   setTxt('delCycleDisplay','—');
   setTxt('delDCNumber','Auto-generated: DC-'+(DB.dcCounter?String(DB.dcCounter+1).padStart(4,'0'):'0001'));
