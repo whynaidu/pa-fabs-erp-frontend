@@ -1137,25 +1137,22 @@ input, select, textarea, button { font-family: inherit; }
         <div class="form-section-title">⚙️ Specifications</div>
         <div class="form-grid cols4">
           <div class="form-group"><label>Reed</label><input type="text" id="poReed" placeholder="e.g. 52" /></div>
+          <div class="form-group"><label>Reed — On Table / Loom</label><select id="poReedOn"><option value="">—</option><option value="table">On Table</option><option value="loom">On Loom</option></select></div>
           <div class="form-group"><label>Pick</label><input type="text" id="poPick" placeholder="e.g. 30" /></div>
+          <div class="form-group"><label>Pick — On Table / Loom</label><select id="poPickOn"><option value="">—</option><option value="table">On Table</option><option value="loom">On Loom</option></select></div>
           <div class="form-group"><label>Width (inches)</label><input type="number" id="poWidth" placeholder="e.g. 60" /></div>
           <div class="form-group"><label>Cost per Metre (₹)</label><input type="number" id="poCostMeter" placeholder="0.00" step="0.01" /></div>
+          <div class="form-group"><label>Warp Count</label><input type="text" id="poWarpCount" placeholder="e.g. 40s" /></div>
+          <div class="form-group"><label>Weft Count</label><input type="text" id="poWeftCount" placeholder="e.g. 30s" /></div>
+          <div class="form-group"><label>Total Ends</label><input type="number" id="poTotalEnds" placeholder="e.g. 4200" /></div>
         </div>
-      </div>
-      <div class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;color:var(--text2);font-size:11px;">— values become dropdowns in Inward/Outward/Return forms</small></div>
-        <div id="warpRowsContainer"></div>
-        <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addWarpRow()">+ Add Warp Count &amp; Colour</button>
-      </div>
-      <div class="form-card" style="border-left:3px solid var(--green);">
-        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;color:var(--text2);font-size:11px;">— values become dropdowns in Inward/Outward/Return forms</small></div>
-        <div id="weftRowsContainer"></div>
-        <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addWeftRow()">+ Add Weft Count &amp; Colour</button>
       </div>
       <div class="form-card">
         <div class="form-section-title">📅 Order Details</div>
         <div class="form-grid">
-          <div class="form-group"><label>Order Quantity (metres) <span class="field-required">*</span></label><input type="number" id="poOrderQty" placeholder="0" /></div>
+          <div class="form-group"><label>Purchase Order Quantity (metres) <span class="field-required">*</span></label><input type="number" id="poOrderQty" placeholder="0" oninput="computeTotalWarp()" /></div>
+          <div class="form-group"><label>Shortage %</label><input type="number" id="poShortage" placeholder="e.g. 8" step="0.01" oninput="computeTotalWarp()" /></div>
+          <div class="form-group"><label>Total Warp Quantity (metres)</label><input type="number" id="poTotalWarp" placeholder="auto-calculated" readonly style="background:var(--bg);font-weight:600;" /></div>
           <div class="form-group"><label>Order Date</label><input type="date" id="poOrderDate" /></div>
           <div class="form-group"><label>Expected Completion Date</label><input type="date" id="poExpectedDate" /></div>
         </div>
@@ -1170,7 +1167,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search PO..." oninput="filterTable(this.value,'myPOTable')">
         </div>
         <table class="data-table" id="myPOTable">
-          <thead><tr><th>PO Number</th><th>Description</th><th>Customer</th><th>Reed×Pick</th><th>Order Qty</th><th>Warp</th><th>Weft</th><th>Remarks</th><th>Status</th><th>Date</th></tr></thead>
+          <thead><tr><th>PO Number</th><th>Description</th><th>Customer</th><th>Reed×Pick</th><th>PO Qty</th><th>Warp Count</th><th>Weft Count</th><th>Total Warp</th><th>Status</th><th>Date</th></tr></thead>
           <tbody id="myPOBody"></tbody>
         </table>
       </div>
@@ -1884,7 +1881,7 @@ function userNav(page, btn) {
   renderUserTables();
   if(page==='dashboard') { renderUserDashboard(); }
   if(page==='loomAlloc'||page==='manufacturing') { renderLoomGrid('userLoomGrid'); populateLoomDropdowns(); }
-  if(page==='poDetails') { if(document.getElementById('warpRowsContainer') && document.getElementById('warpRowsContainer').children.length===0){addWarpRow();addWeftRow();} if(typeof renderPOTable === 'function') renderPOTable(); }
+  if(page==='poDetails') { if(typeof renderPOTable === 'function') renderPOTable(); }
   if(page==='delivery') { document.getElementById('delDate').value=todayISO(); }
   if(page==='dashboard' || page==='loomAlloc' || page==='manufacturing') { populateLoomDropdowns(); }
 }
@@ -2063,41 +2060,32 @@ function addWeftRow() {
   document.getElementById('weftRowsContainer').appendChild(r);
 }
 
+// Total Warp Quantity = PO qty × (1 + shortage%/100)  (standard weaving allowance)
+function computeTotalWarp() {
+  const qty = parseFloat(document.getElementById('poOrderQty').value)||0;
+  const sh = parseFloat(document.getElementById('poShortage').value)||0;
+  const el = document.getElementById('poTotalWarp');
+  if(el) el.value = qty>0 ? Math.round(qty*(1+sh/100)*100)/100 : '';
+}
+const _val = id => { const e=document.getElementById(id); return e? e.value.trim() : ''; };
 async function savePODetails() {
   const poNum = document.getElementById('poNumber').value.trim();
   const qty = parseFloat(document.getElementById('poOrderQty').value)||0;
   if(!poNum){showToast('PO Number is required');return;}
-  if(qty<=0){showToast('Order Quantity must be >0');return;}
-  const warpRows=[];
-  document.querySelectorAll('.warp-row').forEach(r=>{
-    const c=r.querySelector('.warp-count').value.trim(), col=r.querySelector('.warp-colour').value.trim();
-    const q=parseFloat(r.querySelector('.warp-qty').value)||0, b=parseInt(r.querySelector('.warp-bundles').value)||0;
-    if(c||col) warpRows.push({count:c,colour:col,qty_kg:q,bundles:b});
-  });
-  const weftRows=[];
-  document.querySelectorAll('.weft-row').forEach(r=>{
-    const c=r.querySelector('.weft-count').value.trim(), col=r.querySelector('.weft-colour').value.trim();
-    const q=parseFloat(r.querySelector('.weft-qty').value)||0, b=parseInt(r.querySelector('.weft-bundles').value)||0;
-    if(c||col) weftRows.push({count:c,colour:col,qty_kg:q,bundles:b});
-  });
+  if(qty<=0){showToast('Purchase Order Quantity must be >0');return;}
   const po={
-    poNumber:poNum, description:document.getElementById('poDescription').value.trim(),
-    purchaser:document.getElementById('poPurchaser').value.trim(), remarks:document.getElementById('poRemarks').value.trim(),
-    reed:document.getElementById('poReed').value.trim(), pick:document.getElementById('poPick').value.trim(),
-    width:document.getElementById('poWidth').value.trim(), costPerMeter:parseFloat(document.getElementById('poCostMeter').value)||0,
-    warpRows, weftRows, orderQty:qty,
-    orderDate:document.getElementById('poOrderDate').value, expectedDate:document.getElementById('poExpectedDate').value,
-    status:'pending', createdBy:DB.currentUser, createdAt:todayISO()
+    poNumber:poNum, description:_val('poDescription'), purchaser:_val('poPurchaser'), remarks:_val('poRemarks'),
+    reed:_val('poReed'), reedOn:_val('poReedOn'), pick:_val('poPick'), pickOn:_val('poPickOn'),
+    width:_val('poWidth'), costPerMeter:parseFloat(document.getElementById('poCostMeter').value)||null,
+    warpCount:_val('poWarpCount'), weftCount:_val('poWeftCount'),
+    totalEnds:parseInt(document.getElementById('poTotalEnds').value)||null,
+    shortagePercentage:parseFloat(document.getElementById('poShortage').value)||null,
+    orderQty:qty, orderDate:document.getElementById('poOrderDate').value, expectedDate:document.getElementById('poExpectedDate').value,
+    status:'pending'
   };
-
   try {
-    const response = await fetchAPI('/pos', {
-      method: 'POST',
-      body: JSON.stringify(po),
-    });
-
+    const response = await fetchAPI('/pos', { method:'POST', body: JSON.stringify(po) });
     if (response) {
-      // Reload POs
       DB.pos = await fetchAPI('/pos');
       clearPOForm(); renderPOTable();
       showToast('PO saved: '+poNum);
@@ -2109,10 +2097,8 @@ async function savePODetails() {
 }
 
 function clearPOForm() {
-  ['poNumber','poDescription','poPurchaser','poRemarks','poReed','poPick','poWidth','poOrderQty','poOrderDate','poExpectedDate','poCostMeter'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('warpRowsContainer').innerHTML='';
-  document.getElementById('weftRowsContainer').innerHTML='';
-  warpRowCount=0; weftRowCount=0; addWarpRow(); addWeftRow();
+  ['poNumber','poDescription','poPurchaser','poRemarks','poReed','poPick','poWidth','poOrderQty','poShortage','poTotalWarp','poOrderDate','poExpectedDate','poCostMeter','poWarpCount','poWeftCount','poTotalEnds'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['poReedOn','poPickOn'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});
 }
 
 function renderPOTable() {
@@ -2124,9 +2110,9 @@ function renderPOTable() {
     <td>${po.purchaser||'—'}</td>
     <td style="font-family:var(--mono,monospace);">${po.reed||'—'}×${po.pick||'—'}</td>
     <td>${po.orderQty} m</td>
-    <td>${po.warpRows.map(w=>`${w.count} ${w.colour}`).join(', ')||'—'}</td>
-    <td>${po.weftRows.map(w=>`${w.count} ${w.colour}`).join(', ')||'—'}</td>
-    <td style="max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${po.remarks||'—'}</td>
+    <td>${po.warpCount||'—'}</td>
+    <td>${po.weftCount||'—'}</td>
+    <td>${po.totalWarpQty!=null?po.totalWarpQty+' m':'—'}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
     <td>${po.orderDate||'—'}</td>
   </tr>`).join('');
