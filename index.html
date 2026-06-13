@@ -1648,6 +1648,8 @@ async function fetchAPI(endpoint, options = {}) {
 async function loadAllData() {
   // Load each endpoint independently so a missing/forbidden one doesn't wipe the rest
   const safe = (ep) => fetchAPI(ep).catch(e => { console.warn(`skip ${ep}: ${e.message}`); return []; });
+  // /users is admin-only — don't even call it as staff (avoids a noisy 403)
+  const isAdmin = (DB.currentRole||currentRole)==='admin';
   const [pos, inwards, outwards, returns, beams, loomAllocs, mfgs, inventory, deliveries, users, looms] = await Promise.all([
     safe('/pos'),
     safe('/inwards'),
@@ -1658,7 +1660,7 @@ async function loadAllData() {
     safe('/manufacturing'),
     safe('/inventory-inward'),
     safe('/deliveries'),
-    safe('/users'),
+    isAdmin ? safe('/users') : Promise.resolve([]),
     safe('/looms'),
   ]);
 
@@ -3069,6 +3071,7 @@ function renderAdminDashboard() {
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
+        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit">✏️</button>
         <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
         <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
       </div>
@@ -3089,6 +3092,7 @@ function renderAllPOs() {
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
+        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit">✏️</button>
         <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
         <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
       </div>
@@ -3168,6 +3172,7 @@ function renderAdminDelivery() {
     <td>${d.deliveryDate||'—'}</td>
     <td><div style="display:flex;gap:4px;">
       <button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button>
+      <button class="btn btn-sm" onclick="adminEdit('delivery','${d.id}')" title="Edit">✏️</button>
       <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('delivery','${d.id}')" title="Delete">🗑</button>
     </div></td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
@@ -3361,12 +3366,76 @@ function adminView(stage, id){
     `</div></div>`;
   openPanel(`${s.label} Details`, rec[s.idField], html);
 }
-// Action-cell HTML for an admin table row: View · Delete (+ stage download lives in toolbar).
+// Action-cell HTML for an admin table row: View · Edit · Delete (+ stage download lives in toolbar).
 function adminActions(stage, id){
   return `<div style="display:flex;gap:4px;">
     <button class="btn btn-sm" onclick="adminView('${stage}','${id}')" title="View">👁</button>
+    <button class="btn btn-sm" onclick="adminEdit('${stage}','${id}')" title="Edit">✏️</button>
     <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('${stage}','${id}')" title="Delete">🗑</button>
   </div>`;
+}
+
+// Whitelisted editable fields per stage (camelCase keys, matching the backend PUT whitelists).
+const EDIT_FIELDS = {
+  po: [ {k:'description',l:'Description'},{k:'purchaser',l:'Purchaser'},{k:'reed',l:'Reed'},{k:'pick',l:'Pick'},
+        {k:'reedOn',l:'Reed On',type:'select',opts:[['','—'],['table','On Table'],['loom','On Loom']]},
+        {k:'pickOn',l:'Pick On',type:'select',opts:[['','—'],['table','On Table'],['loom','On Loom']]},
+        {k:'width',l:'Width'},{k:'orderQty',l:'PO Quantity (m)',type:'number'},{k:'costPerMeter',l:'Cost / Metre',type:'number'},
+        {k:'warpCount',l:'Warp Count'},{k:'weftCount',l:'Weft Count'},{k:'totalEnds',l:'Total Ends',type:'number'},
+        {k:'shortagePercentage',l:'Shortage %',type:'number'},{k:'remarks',l:'Remarks'},
+        {k:'status',l:'Status',type:'select',opts:[['pending','Pending'],['in_progress','In Progress'],['complete','Complete']]} ],
+  inward: [ {k:'location',l:'Location'},{k:'rmNumber',l:'RM Number'},{k:'coneBagCount',l:'Cone/Bag Count',type:'number'},
+            {k:'cost',l:'Cost (₹)',type:'number'},{k:'receivedBy',l:'Received By'},{k:'entryDate',l:'Entry Date',type:'date'},{k:'isDone',l:'Done',type:'checkbox'} ],
+  outward: [ {k:'operatorName',l:'Operator'},{k:'warpMetres',l:'Warp Metres',type:'number'},{k:'warpCones',l:'Warp Cones',type:'number'},
+             {k:'weftCones',l:'Weft Cones',type:'number'},{k:'beamsExpected',l:'Beams Expected',type:'number'},
+             {k:'outwardDate',l:'Outward Date',type:'date'},{k:'expectedReturn',l:'Expected Return',type:'date'},{k:'isDone',l:'Done',type:'checkbox'} ],
+  return: [ {k:'warpMetres',l:'Warp Metres',type:'number'},{k:'weftMetres',l:'Weft Metres',type:'number'},{k:'returnCones',l:'Return Cones',type:'number'},
+            {k:'qualityGrade',l:'Quality Grade'},{k:'operatorName',l:'Operator'},{k:'receiverName',l:'Receiver'},
+            {k:'returnDate',l:'Return Date',type:'date'},{k:'remarks',l:'Remarks'} ],
+  mfg: [ {k:'metresToday',l:'Metres Today',type:'number'},{k:'operatorName',l:'Operator'},{k:'remarks',l:'Remarks'},
+         {k:'logDate',l:'Log Date',type:'date'},{k:'receivedDate',l:'Received Date',type:'date'},{k:'receivedBy',l:'Received By'},{k:'isDone',l:'Done',type:'checkbox'} ],
+  delivery: [ {k:'customerName',l:'Customer'},{k:'designNo',l:'Design No'},{k:'reedPick',l:'Reed & Pick'},{k:'description',l:'Description'},
+              {k:'vehicleNumber',l:'Vehicle'},{k:'driverName',l:'Driver'},{k:'receiverName',l:'Receiver'},{k:'deliveryDate',l:'Delivery Date',type:'date'},{k:'remarks',l:'Remarks'} ],
+  loomAlloc: [ {k:'allocationDate',l:'Allocation Date',type:'date'},{k:'expectedDone',l:'Expected Done',type:'date'} ],
+};
+function adminEdit(stage, id){
+  const s=ADMIN_STAGES[stage]; const fields=EDIT_FIELDS[stage];
+  if(!s||!fields){ showToast('Edit not available for this stage'); return; }
+  const rec=(DB[s.key]||[]).find(x=>String(x[s.idField])===String(id));
+  if(!rec){ showToast('Record not found'); return; }
+  const dval=v=>(typeof v==='string'&&v.length>=10)?v.slice(0,10):'';
+  const body=fields.map(f=>{
+    const v=rec[f.k];
+    if(f.type==='checkbox')
+      return `<div class="form-group"><label>${f.l}</label><select id="aedit-${f.k}"><option value="false"${!v?' selected':''}>No</option><option value="true"${v?' selected':''}>Yes</option></select></div>`;
+    if(f.type==='select')
+      return `<div class="form-group"><label>${f.l}</label><select id="aedit-${f.k}">${f.opts.map(o=>`<option value="${o[0]}"${String(v||'')===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select></div>`;
+    const t=f.type==='number'?'number':f.type==='date'?'date':'text';
+    const val=f.type==='date'?dval(v):(v==null?'':v);
+    return `<div class="form-group"><label>${f.l}</label><input type="${t}" id="aedit-${f.k}" value="${String(val).replace(/"/g,'&quot;')}" /></div>`;
+  }).join('');
+  const html=`<div class="form-grid">${body}</div>
+    <div class="form-actions" style="margin-top:1rem;">
+      <button class="btn btn-primary" onclick="submitAdminEdit('${stage}','${id}')">💾 Save changes</button>
+    </div>`;
+  openPanel(`Edit ${s.label}`, rec[s.idField], html);
+}
+async function submitAdminEdit(stage, id){
+  const s=ADMIN_STAGES[stage]; const fields=EDIT_FIELDS[stage];
+  const payload={};
+  fields.forEach(f=>{
+    const el=document.getElementById('aedit-'+f.k); if(!el) return;
+    if(f.type==='checkbox') payload[f.k]=el.value==='true';
+    else if(f.type==='number'){ const n=parseFloat(el.value); payload[f.k]=isNaN(n)?null:n; }
+    else payload[f.k]=el.value.trim()===''?null:el.value.trim();
+  });
+  try{
+    await fetchAPI(`${s.ep}/${id}`,{method:'PUT',body:JSON.stringify(payload)});
+    DB[s.key]=await fetchAPI(s.ep).catch(()=>DB[s.key]);
+    if(s.reload) s.reload();
+    closePanel && closePanel();
+    showToast(`${s.label} updated`);
+  }catch(e){ showToast('Update failed: '+e.message); }
 }
 function exportCSV(table) {
   const data=DB[table]||[];
