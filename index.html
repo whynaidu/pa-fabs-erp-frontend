@@ -336,7 +336,7 @@ input, select, textarea, button { font-family: inherit; }
 /* ── TABLE ────────────────────────────────────────── */
 .table-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  border-radius: var(--radius); overflow-x: auto; box-shadow: var(--shadow);
 }
 .table-toolbar {
   padding: .875rem 1.25rem; border-bottom: 1px solid var(--border);
@@ -352,7 +352,7 @@ input, select, textarea, button { font-family: inherit; }
 .data-table th {
   text-align: left; padding: 10px 1.25rem; font-size: 11px; font-weight: 700;
   color: var(--text3); text-transform: uppercase; letter-spacing: .07em;
-  background: var(--surface2); border-bottom: 1px solid var(--border);
+  background: var(--surface2); border-bottom: 1px solid var(--border); white-space: nowrap;
 }
 .data-table td { padding: 11px 1.25rem; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
 .data-table tr:last-child td { border-bottom: none; }
@@ -919,6 +919,7 @@ input, select, textarea, button { font-family: inherit; }
         <div class="page-header-actions">
           <button class="btn btn-sm" onclick="exportCSV('inwards')">📥 Inward CSV</button>
           <button class="btn btn-sm" onclick="exportCSV('outwards')">📥 Outward CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('returns')">📥 Return CSV</button>
         </div>
       </div>
       <div class="table-card" style="margin-bottom:1.25rem">
@@ -927,7 +928,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminInwardTable')">
         </div>
         <table class="data-table" id="adminInwardTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="adminInwardBody"></tbody>
         </table>
       </div>
@@ -937,7 +938,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminOutwardTable')">
         </div>
         <table class="data-table" id="adminOutwardTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Process</th><th>Operator</th><th>Warp Count</th><th>Warp Metres</th><th>Weft Count</th><th>Weft KG</th><th>Beams Exp.</th><th>Outward Date</th><th>Exp. Return</th><th>Done</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Process</th><th>Operator</th><th>Warp Count</th><th>Warp Metres</th><th>Weft Count</th><th>Weft KG</th><th>Beams Exp.</th><th>Outward Date</th><th>Exp. Return</th><th>Done</th><th>Actions</th></tr></thead>
           <tbody id="adminOutwardBody"></tbody>
         </table>
       </div>
@@ -947,7 +948,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminReturnTable')">
         </div>
         <table class="data-table" id="adminReturnTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Return Type</th><th>Beam IDs</th><th>Warp Metres</th><th>Cones</th><th>Operator</th><th>Receiver</th><th>Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Return Type</th><th>Beam IDs</th><th>Warp Metres</th><th>Cones</th><th>Operator</th><th>Receiver</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="adminReturnBody"></tbody>
         </table>
       </div>
@@ -971,7 +972,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search PO..." oninput="filterTable(this.value,'adminMfgTable')">
         </div>
         <table class="data-table" id="adminMfgTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Total Mfg. (m)</th><th>Order Qty (m)</th><th>Balance (m)</th><th>Progress</th><th>Done</th><th>Log Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Total Mfg. (m)</th><th>Order Qty (m)</th><th>Balance (m)</th><th>Progress</th><th>Done</th><th>Log Date</th><th>Actions</th></tr></thead>
           <tbody id="adminMfgBody"></tbody>
         </table>
       </div>
@@ -2990,6 +2991,7 @@ function renderAdminDashboard() {
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
         <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
+        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
       </div>
     </td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
@@ -3009,6 +3011,7 @@ function renderAllPOs() {
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
         <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
+        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
       </div>
     </td>
   </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
@@ -3023,7 +3026,8 @@ function renderAdminWarehouse() {
     <td>${i.rmNumber||'—'}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${i.entryDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
+    <td>${adminActions('inward',i.id)}</td>
+  </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
@@ -3031,7 +3035,8 @@ function renderAdminWarehouse() {
     <td>${o.weftCount||'—'}</td><td>${o.weftKg} kg</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.outwardDate||'—'}</td><td>${o.expectedReturn||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
-  </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No outward entries</p></div></td></tr>';
+    <td>${adminActions('outward',o.id)}</td>
+  </tr>`).join('') || '<tr><td colspan="14"><div class="empty-state"><p>No outward entries</p></div></td></tr>';
   document.getElementById('adminReturnBody').innerHTML=DB.returns.map(r=>`<tr>
     <td><strong>${r.poNumber}</strong></td><td>${poDescMap[r.poNumber]||'—'}</td><td>${badge('purple','Cycle '+r.cycleNumber)}</td>
     <td>${badge(r.returnType==='warping_return'?'blue':'green',r.returnType.replace('_',' '))}</td>
@@ -3039,7 +3044,8 @@ function renderAdminWarehouse() {
     <td>${r.returnCones||'—'}</td>
     <td>${r.operatorName||'—'}</td><td>${r.receiverName||'—'}</td>
     <td>${r.returnDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No return entries</p></div></td></tr>';
+    <td>${adminActions('return',r.id)}</td>
+  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No return entries</p></div></td></tr>';
 }
 
 function renderAdminMfg() {
@@ -3065,7 +3071,8 @@ function renderAdminMfg() {
     <td><div class="progress" style="width:80px;display:inline-block;"><div class="progress-bar" style="width:${Math.min(100,Math.round(m.totalManufactured/((DB.pos.find(p=>p.poNumber===m.poNumber)||{}).orderQty||1)*100))}%"></div></div></td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
     <td>${m.logDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No manufacturing log</p></div></td></tr>';
+    <td>${adminActions('mfg',m.id)}</td>
+  </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No manufacturing log</p></div></td></tr>';
 }
 
 function renderAdminDelivery() {
@@ -3077,7 +3084,10 @@ function renderAdminDelivery() {
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
-    <td><button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button></td>
+    <td><div style="display:flex;gap:4px;">
+      <button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button>
+      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('delivery','${d.id}')" title="Delete">🗑</button>
+    </div></td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
 }
 
@@ -3225,6 +3235,55 @@ function printPODetails(poNum) {
   printWindow.print();
 }
 
+// ════════════════════════════════════════════════════════════════
+// ADMIN — generic view / delete / download per stage
+// ════════════════════════════════════════════════════════════════
+const ADMIN_STAGES = {
+  po:        {ep:'/pos',                  key:'pos',        idField:'poNumber', reload:renderAllPOs,      label:'PO'},
+  inward:    {ep:'/inwards',              key:'inwards',    idField:'id',       reload:renderAdminWarehouse, label:'Inward entry'},
+  outward:   {ep:'/outwards',             key:'outwards',   idField:'id',       reload:renderAdminWarehouse, label:'Outward entry'},
+  return:    {ep:'/returns',              key:'returns',    idField:'id',       reload:renderAdminWarehouse, label:'Return entry'},
+  mfg:       {ep:'/manufacturing',        key:'mfgs',       idField:'id',       reload:renderAdminMfg,    label:'Manufacturing log'},
+  delivery:  {ep:'/deliveries',           key:'deliveries', idField:'id',       reload:renderAdminDelivery, label:'Delivery'},
+  inventory: {ep:'/inventory-inward',     key:'inventory',  idField:'id',       reload:renderAdminWarehouse, label:'Inventory entry'},
+  loomAlloc: {ep:'/looms/allocations',    key:'loomAllocs', idField:'id',       reload:renderAdminLoomTable, label:'Loom allocation'},
+};
+async function adminDelete(stage, id){
+  const s=ADMIN_STAGES[stage]; if(!s) return;
+  if(!confirm(`Delete this ${s.label}? This cannot be undone.`)) return;
+  try{
+    await fetchAPI(`${s.ep}/${id}`,{method:'DELETE'});
+    DB[s.key]=await fetchAPI(s.ep).catch(()=>DB[s.key]);
+    // refresh anything a cascade may have touched
+    DB.looms=await fetchAPI('/looms').catch(()=>DB.looms);
+    if(stage==='return'){ DB.loomAllocs=await fetchAPI('/looms/allocations').catch(()=>DB.loomAllocs); }
+    if(s.reload) s.reload();
+    showToast(`${s.label} deleted`);
+  }catch(e){ showToast('Delete failed: '+e.message); }
+}
+function adminView(stage, id){
+  const s=ADMIN_STAGES[stage]; if(!s) return;
+  const rec=(DB[s.key]||[]).find(x=>String(x[s.idField])===String(id));
+  if(!rec){ showToast('Record not found'); return; }
+  const fmt=v=>{
+    if(v==null||v==='') return '—';
+    if(Array.isArray(v)) return v.map(o=>typeof o==='object'?Object.entries(o).filter(([,x])=>x!=null&&x!=='').map(([k,x])=>`${k}: ${x}`).join(', '):o).join('<br>')||'—';
+    if(typeof v==='object') return Object.entries(v).map(([k,x])=>`${k}: ${x}`).join(', ');
+    return String(v);
+  };
+  const html=`<div class="detail-section"><div class="detail-grid">`+
+    Object.entries(rec).filter(([k])=>!['id','submittedBy','createdBy','userId'].includes(k))
+      .map(([k,v])=>`<div class="detail-item"><label>${k.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase())}</label><div class="dval">${fmt(v)}</div></div>`).join('')+
+    `</div></div>`;
+  openPanel(`${s.label} Details`, rec[s.idField], html);
+}
+// Action-cell HTML for an admin table row: View · Delete (+ stage download lives in toolbar).
+function adminActions(stage, id){
+  return `<div style="display:flex;gap:4px;">
+    <button class="btn btn-sm" onclick="adminView('${stage}','${id}')" title="View">👁</button>
+    <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('${stage}','${id}')" title="Delete">🗑</button>
+  </div>`;
+}
 function exportCSV(table) {
   const data=DB[table]||[];
   if(!data.length){showToast('No data to export');return;}
