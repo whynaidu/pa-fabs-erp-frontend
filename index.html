@@ -2353,7 +2353,7 @@ function renderOutwardTable() {
   tbody.innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
-    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
+    <td>${o.operatorName||"—"}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
     <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${o.outwardDate||'—'}</td>
@@ -2854,7 +2854,7 @@ function previewDCSlip() {
     </div>
     <table class="dc-piece-table">
       <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
+      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo||"—"}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
       <tfoot><tr style="font-weight:700;border-top:2px solid black;"><td>Total: ${noPieces} pcs</td><td>${totalMetres} m</td><td>${Math.round(totalWeight*100)/100} kg</td></tr></tfoot>
     </table>
     ${document.getElementById('delRemarks').value?`<div style="margin-top:.75rem;"><span style="font-weight:700;">Remarks:</span> ${document.getElementById('delRemarks').value}</div>`:''}
@@ -2876,9 +2876,9 @@ function clearDeliveryForm() {
 function renderDeliveryTable() {
   const tbody=document.getElementById('myDeliveryBody');
   tbody.innerHTML=DB.deliveries.map(d=>`<tr>
-    <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${d.description||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
-    <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
-    <td>${d.noPieces}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
+    <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber||"—"}</td><td>${d.description||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
+    <td>${d.customerName||"—"}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
+    <td>${nz(d.noPieces)}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
@@ -2907,7 +2907,7 @@ function showDCSlip(id) {
     <div style="margin-top:1rem;"><div class="detail-section-title">Piece Table</div>
       <table class="data-table">
         <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
+        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo||"—"}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
         <tfoot><tr style="font-weight:700;"><td>Total: ${d.noPieces} pcs</td><td>${nz(d.grandTotalMetres,' m')}</td><td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td></tr></tfoot>
       </table>
     </div>
@@ -3117,7 +3117,7 @@ function renderAdminWarehouse() {
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
-    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
+    <td>${o.operatorName||"—"}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
     <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.outwardDate||'—'}</td><td>${o.expectedReturn||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
@@ -3166,9 +3166,9 @@ function renderAdminMfg() {
 function renderAdminDelivery() {
   const poDescMap=DB.pos.reduce((m,p)=>{m[p.poNumber]=p.description;return m;},{});
   document.getElementById('adminDeliveryBody').innerHTML=DB.deliveries.map(d=>`<tr>
-    <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${poDescMap[d.poNumber]||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
-    <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
-    <td>${d.noPieces}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
+    <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber||"—"}</td><td>${poDescMap[d.poNumber]||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
+    <td>${d.customerName||"—"}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
+    <td>${nz(d.noPieces)}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
@@ -3308,14 +3308,14 @@ function printPODetails(poNum) {
         <h3>Warp Yarn</h3>
         <table>
           <tr><th>Count</th><th>Colour</th><th>Qty (KG)</th><th>Bundles</th></tr>
-          ${po.warpRows.map(w=>`<tr><td>${w.count}</td><td>${w.colour}</td><td>${w.qty_kg}</td><td>${w.bundles}</td></tr>`).join('')}
+          ${po.warpRows.map(w=>`<tr><td>${w.count||"—"}</td><td>${w.colour||"—"}</td><td>${nz(w.qty_kg)}</td><td>${nz(w.bundles)}</td></tr>`).join('')}
         </table>
       </div>
       <div class="section">
         <h3>Weft Yarn</h3>
         <table>
           <tr><th>Count</th><th>Colour</th><th>Qty (KG)</th><th>Bundles</th></tr>
-          ${po.weftRows.map(w=>`<tr><td>${w.count}</td><td>${w.colour}</td><td>${w.qty_kg}</td><td>${w.bundles}</td></tr>`).join('')}
+          ${po.weftRows.map(w=>`<tr><td>${w.count||"—"}</td><td>${w.colour||"—"}</td><td>${nz(w.qty_kg)}</td><td>${nz(w.bundles)}</td></tr>`).join('')}
         </table>
       </div>
       ${po.remarks?`<div class="section"><h3>Remarks</h3><p>${po.remarks}</p></div>`:''}
