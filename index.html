@@ -1532,7 +1532,7 @@ input, select, textarea, button { font-family: inherit; }
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
           <div style="font-size:15px;font-weight:700;">DC Slip Preview</div>
           <div style="display:flex;gap:.5rem;">
-            <button class="btn btn-sm" onclick="window.print()">🖨 Print DC</button>
+            <button class="btn btn-sm" onclick="printDCNode('dcSlipContent')">🖨 Print DC</button>
             <button class="btn btn-sm" onclick="document.getElementById('dcSlipPreview').style.display='none'">✕ Close</button>
           </div>
         </div>
@@ -1811,17 +1811,29 @@ async function completeRegistration() {
     return;
   }
 
+  const email=(document.getElementById('regEmail').value||'').trim();
+  const username=(document.getElementById('regUsername').value||'').trim();
+  const fullName=(document.getElementById('regFullName').value||'').trim();
+  if(!fullName){showToast('Full name required');return;}
+  if(!email){showToast('Email required');return;}
+  if(!username){showToast('Username required');return;}
+  // Job title (regRole) is stored in department; the account `role` is always a
+  // regular user for self-registration (backend enum only accepts user/admin —
+  // sending a job title here was the 422 that broke registration).
+  const jobTitle=document.getElementById('regRole').value||'';
+  const dept=document.getElementById('regDepartment').value||'';
+  const department=[dept,jobTitle].filter(Boolean).join(' · ')||null;
   try {
     await fetchAPI('/register', {
       method: 'POST',
       body: JSON.stringify({
-        full_name: document.getElementById('regFullName').value || 'New User',
-        username: document.getElementById('regUsername').value || 'newuser',
+        fullName: fullName,
+        username: username,
         password: pass,
-        email: document.getElementById('regEmail').value || '',
-        phone: document.getElementById('regPhone') ? document.getElementById('regPhone').value : null,
-        department: document.getElementById('regDepartment').value || null,
-        role: document.getElementById('regRole').value || 'user',
+        email: email,
+        phone: (document.getElementById('regPhone')?document.getElementById('regPhone').value.trim():'')||null,
+        department: department,
+        role: 'user',
       }),
     });
     showToast('Registered! Awaiting Admin approval.');
@@ -1876,6 +1888,8 @@ function userNav(page, btn) {
 // ════════════════════════════════════════════════════════════════
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function badge(cls, txt) { return `<span class="badge badge-${cls}">${txt}</span>`; }
+// Null-safe value for table cells: blank/null/undefined/NaN → "—", else value (+ optional unit).
+function nz(v, suf){ return (v===null||v===undefined||v===''||(typeof v==='number'&&isNaN(v)))?'—':v+(suf||''); }
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 2800);
@@ -2094,7 +2108,7 @@ function renderPOTable() {
     <td>${po.description||'—'}</td>
     <td>${po.purchaser||'—'}</td>
     <td style="font-family:var(--mono,monospace);">${po.reed||'—'}×${po.pick||'—'}</td>
-    <td>${po.orderQty} m</td>
+    <td>${nz(po.orderQty,' m')}</td>
     <td>${po.warpCount||'—'}</td>
     <td>${po.weftCount||'—'}</td>
     <td>${po.totalWarpQty!=null?po.totalWarpQty+' m':'—'}</td>
@@ -2299,8 +2313,8 @@ function renderOutwardTable() {
   tbody.innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
-    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${o.warpMetres} m</td>
-    <td>${o.weftCount||'—'}</td><td>${o.weftKg} kg</td><td>${o.beamsExpected||'—'}</td>
+    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
+    <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${o.outwardDate||'—'}</td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No outward entries yet</p></div></td></tr>';
@@ -2559,7 +2573,7 @@ function renderMfgTable() {
   tbody.innerHTML=DB.mfgs.map(m=>`<tr>
     <td><strong>${m.poNumber||'—'}</strong></td><td>${poDescMap[m.poNumber]||'—'}</td><td>${badge('purple','Cycle '+(m.cycleNumber||'1'))}</td>
     <td>Loom <strong>${m.loomNumber}</strong></td><td style="font-family:monospace;">${m.beamId||'—'}</td>
-    <td>${m.metresToday} m</td><td>${m.totalManufactured} m</td><td>${m.balanceQty} m</td>
+    <td>${nz(m.metresToday,' m')}</td><td>${nz(m.totalManufactured,' m')}</td><td>${nz(m.balanceQty,' m')}</td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
     <td>${m.logDate||'—'}</td>
   </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No manufacturing log yet</p></div></td></tr>';
@@ -2596,7 +2610,7 @@ function renderInvTable() {
   tbody.innerHTML=DB.inventory.map(v=>`<tr>
     <td><strong>${v.poNumber}</strong></td><td>${badge('purple','Cycle '+v.cycleNumber)}</td>
     <td>Loom <strong>${v.loomNumber}</strong></td><td style="font-family:monospace;">${v.beamId||'—'}</td>
-    <td><strong>${v.fabricMetres} m</strong></td>
+    <td><strong>${nz(v.fabricMetres,' m')}</strong></td>
     <td>${v.qualityGrade?badge('gray',v.qualityGrade):'—'}</td>
     <td>${v.receivedBy||'—'}</td><td>${v.receivedDate||'—'}</td>
   </tr>`).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No inventory entries yet</p></div></td></tr>';
@@ -2725,6 +2739,33 @@ function addDeliveryPieceRow() {
   `;
   tbody.appendChild(tr);
 }
+// Print ONLY one delivery challan — open an isolated window with just that DC's
+// markup so nothing else on the page (nav, tables, other challans) is printed.
+function printDCHTML(innerHTML, title){
+  const w=window.open('','_blank','width=800,height=900');
+  if(!w){showToast('Allow pop-ups to print the DC');return;}
+  w.document.write(`<!doctype html><html><head><title>${title||'Delivery Challan'}</title>
+    <style>
+      body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}
+      table{width:100%;border-collapse:collapse;margin:12px 0;}
+      th,td{border:1px solid #333;padding:6px 10px;text-align:left;font-size:13px;}
+      tfoot td{font-weight:700;}
+      .dc-header,.dc-meta{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;margin-bottom:12px;}
+      .dc-company-name{font-size:22px;font-weight:800;}
+      .dc-slip-title h3{margin:0;} .dc-meta-item{font-size:13px;} .dc-meta-label{font-weight:700;margin-right:4px;}
+      .dc-footer{display:flex;justify-content:space-between;margin-top:48px;}
+      .dc-sig-line{border-top:1px solid #333;padding-top:4px;min-width:180px;text-align:center;font-size:12px;}
+      .dc-logo-img{max-height:60px;}
+    </style></head><body>${innerHTML}
+    <script>window.onload=function(){window.print();setTimeout(function(){window.close();},300);}<\/script>
+    </body></html>`);
+  w.document.close();
+}
+function printDCNode(elementId){
+  const el=document.getElementById(elementId);
+  if(!el){showToast('Nothing to print');return;}
+  printDCHTML(el.innerHTML, 'Delivery Challan');
+}
 function previewDCSlip() {
   const poNum=document.getElementById('delPO').value.trim();
   const inward=latestInward(poNum);
@@ -2773,7 +2814,7 @@ function previewDCSlip() {
     </div>
     <table class="dc-piece-table">
       <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo}</td><td>${p.metres} m</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
+      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
       <tfoot><tr style="font-weight:700;border-top:2px solid black;"><td>Total: ${noPieces} pcs</td><td>${totalMetres} m</td><td>${Math.round(totalWeight*100)/100} kg</td></tr></tfoot>
     </table>
     ${document.getElementById('delRemarks').value?`<div style="margin-top:.75rem;"><span style="font-weight:700;">Remarks:</span> ${document.getElementById('delRemarks').value}</div>`:''}
@@ -2797,7 +2838,7 @@ function renderDeliveryTable() {
   tbody.innerHTML=DB.deliveries.map(d=>`<tr>
     <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${d.description||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
     <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
-    <td>${d.noPieces}</td><td><strong>${d.grandTotalMetres} m</strong></td>
+    <td>${d.noPieces}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
@@ -2818,7 +2859,7 @@ function showDCSlip(id) {
       <div class="detail-item"><label>Customer</label><div class="dval">${d.customerName}</div></div>
       <div class="detail-item"><label>Reed×Pick</label><div class="dval">${d.reedPick||'—'}</div></div>
       <div class="detail-item"><label>Total Pieces</label><div class="dval">${d.noPieces}</div></div>
-      <div class="detail-item"><label>Total Metres</label><div class="dval" style="color:var(--brand);font-size:18px;">${d.grandTotalMetres} m</div></div>
+      <div class="detail-item"><label>Total Metres</label><div class="dval" style="color:var(--brand);font-size:18px;">${nz(d.grandTotalMetres,' m')}</div></div>
       <div class="detail-item"><label>Total Weight</label><div class="dval">${d.totalWeight!=null?d.totalWeight+' kg':'—'}</div></div>
       <div class="detail-item"><label>Vehicle</label><div class="dval">${d.vehicleNumber||'—'}</div></div>
       <div class="detail-item"><label>Driver</label><div class="dval">${d.driverName||'—'}</div></div>
@@ -2826,13 +2867,14 @@ function showDCSlip(id) {
     <div style="margin-top:1rem;"><div class="detail-section-title">Piece Table</div>
       <table class="data-table">
         <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo}</td><td>${p.metres} m</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
-        <tfoot><tr style="font-weight:700;"><td>Total: ${d.noPieces} pcs</td><td>${d.grandTotalMetres} m</td><td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td></tr></tfoot>
+        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
+        <tfoot><tr style="font-weight:700;"><td>Total: ${d.noPieces} pcs</td><td>${nz(d.grandTotalMetres,' m')}</td><td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td></tr></tfoot>
       </table>
     </div>
     ${d.remarks?`<div style="margin-top:1rem;"><strong>Remarks:</strong> ${d.remarks}</div>`:''}
   </div>`;
-  openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+d.deliveryDate, html);
+  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')">🖨 Print this DC</button></div><div id="dcSlipPanelContent">${html}</div>`;
+  openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+d.deliveryDate, wrapped);
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2983,7 +3025,7 @@ function renderAdminDashboard() {
     <td>${po.description||'—'}</td>
     <td>${po.purchaser||'—'}</td>
     <td style="font-family:monospace;">${po.reed||'—'}×${po.pick||'—'}</td>
-    <td>${po.orderQty} m</td>
+    <td>${nz(po.orderQty,' m')}</td>
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
     <td>${po.orderDate||'—'}</td>
@@ -3002,7 +3044,7 @@ function renderAllPOs() {
     <td><strong>${po.poNumber}</strong></td><td>${po.description||'—'}</td>
     <td>${po.purchaser||'—'}</td>
     <td style="font-family:monospace;">${po.reed||'—'}×${po.pick||'—'}</td>
-    <td>${po.width||'—'}"</td><td>${po.orderQty} m</td>
+    <td>${po.width||'—'}"</td><td>${nz(po.orderQty,' m')}</td>
     <td>₹${po.costPerMeter||0}/m</td>
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
@@ -3031,8 +3073,8 @@ function renderAdminWarehouse() {
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
-    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${o.warpMetres} m</td>
-    <td>${o.weftCount||'—'}</td><td>${o.weftKg} kg</td><td>${o.beamsExpected||'—'}</td>
+    <td>${o.operatorName}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
+    <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.outwardDate||'—'}</td><td>${o.expectedReturn||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${adminActions('outward',o.id)}</td>
@@ -3065,9 +3107,9 @@ function renderAdminMfg() {
   document.getElementById('adminMfgBody').innerHTML=DB.mfgs.map(m=>`<tr>
     <td><strong>${m.poNumber||'—'}</strong></td><td>${poDescMap[m.poNumber]||'—'}</td><td>${badge('purple','Cycle '+(m.cycleNumber||'1'))}</td>
     <td>Loom <strong>${m.loomNumber}</strong></td><td style="font-family:monospace;">${m.beamId||'—'}</td>
-    <td>${m.metresToday} m</td><td>${m.totalManufactured} m</td>
+    <td>${nz(m.metresToday,' m')}</td><td>${nz(m.totalManufactured,' m')}</td>
     <td>${(DB.pos.find(p=>p.poNumber===m.poNumber)||{}).orderQty||'—'} m</td>
-    <td>${m.balanceQty} m</td>
+    <td>${nz(m.balanceQty,' m')}</td>
     <td><div class="progress" style="width:80px;display:inline-block;"><div class="progress-bar" style="width:${Math.min(100,Math.round(m.totalManufactured/((DB.pos.find(p=>p.poNumber===m.poNumber)||{}).orderQty||1)*100))}%"></div></div></td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
     <td>${m.logDate||'—'}</td>
@@ -3080,7 +3122,7 @@ function renderAdminDelivery() {
   document.getElementById('adminDeliveryBody').innerHTML=DB.deliveries.map(d=>`<tr>
     <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${poDescMap[d.poNumber]||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
     <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
-    <td>${d.noPieces}</td><td><strong>${d.grandTotalMetres} m</strong></td>
+    <td>${d.noPieces}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
@@ -3125,7 +3167,7 @@ function showPODetail(poNum) {
       <div class="detail-item"><label>Description</label><div class="dval">${po.description||'—'}</div></div>
       <div class="detail-item"><label>Reed × Pick</label><div class="dval">${po.reed||'—'}×${po.pick||'—'}</div></div>
       <div class="detail-item"><label>Width</label><div class="dval">${po.width||'—'}"</div></div>
-      <div class="detail-item"><label>Order Qty</label><div class="dval">${po.orderQty} m</div></div>
+      <div class="detail-item"><label>Order Qty</label><div class="dval">${nz(po.orderQty,' m')}</div></div>
       <div class="detail-item"><label>Cost/m</label><div class="dval">₹${po.costPerMeter||0}</div></div>
       <div class="detail-item"><label>Order Date</label><div class="dval">${po.orderDate||'—'}</div></div>
       <div class="detail-item"><label>Expected Date</label><div class="dval">${po.expectedDate||'—'}</div></div>
@@ -3211,7 +3253,7 @@ function printPODetails(poNum) {
       <p><strong>Customer:</strong> ${po.purchaser||'—'}</p>
       <p><strong>Description:</strong> ${po.description||'—'}</p>
       <p><strong>Status:</strong> ${po.status}</p>
-      <p><strong>Order Qty:</strong> ${po.orderQty} m</p>
+      <p><strong>Order Qty:</strong> ${nz(po.orderQty,' m')}</p>
       <p><strong>Reed × Pick:</strong> ${po.reed||'—'}×${po.pick||'—'}</p>
       <div class="section">
         <h3>Warp Yarn</h3>
