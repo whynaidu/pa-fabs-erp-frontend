@@ -927,7 +927,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminInwardTable')">
         </div>
         <table class="data-table" id="adminInwardTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Count</th><th>Warp Colour</th><th>Warp KG</th><th>Weft Count</th><th>Weft Colour</th><th>Weft KG</th><th>RM No.</th><th>Next Process</th><th>Done</th><th>Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th></tr></thead>
           <tbody id="adminInwardBody"></tbody>
         </table>
       </div>
@@ -994,7 +994,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminDeliveryTable')">
         </div>
         <table class="data-table" id="adminDeliveryTable">
-          <thead><tr><th>DC Number</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>No. Pieces</th><th>Total Metres</th><th>Vehicle</th><th>Date</th><th>DC Slip</th></tr></thead>
+          <thead><tr><th>DC Number</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>No. Pieces</th><th>Total Metres</th><th>Total Weight</th><th>Vehicle</th><th>Date</th><th>DC Slip</th></tr></thead>
           <tbody id="adminDeliveryBody"></tbody>
         </table>
       </div>
@@ -1190,42 +1190,21 @@ input, select, textarea, button { font-family: inherit; }
           <div class="form-group"><label>Cycle Number</label><div class="readonly-val highlight" id="inCycleDisplay">Auto-assigned</div></div>
         </div>
         <div class="form-grid" style="margin-top:.75rem;">
-          <div class="form-group"><label>Next Process <span class="field-required">*</span></label>
-            <select id="inNextProcess">
-              <option value="">— Select —</option>
-              <option value="warping">Warping</option>
-              <option value="winding">Winding</option>
-              <option value="both">Both</option>
-            </select>
-          </div>
+          <div class="form-group"><label>Location <span class="field-required">*</span></label><input type="text" id="inLocation" placeholder="e.g. Rack-7 / Godown-A" /></div>
           <div class="form-group"><label>Entry Date</label><input type="date" id="inEntryDate" /></div>
         </div>
       </div>
       <div class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warp Details <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
-        <div class="form-grid">
-          <div class="form-group"><label>Count <span class="field-required">*</span></label>
-            <select id="inWarpCountSelect"><option value="">— Select Warp Count —</option></select>
-          </div>
-          <div class="form-group"><label>Colour <span class="field-required">*</span></label>
-            <select id="inWarpColourSelect"><option value="">— Select Warp Colour —</option></select>
-          </div>
-          <div class="form-group"><label>Qty (KG)</label><input type="number" id="inWarpKg" placeholder="0" /></div>
-          <div class="form-group"><label>Bundles</label><input type="number" id="inWarpBundles" placeholder="0" /></div>
+        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
+          <button type="button" class="btn btn-sm" style="float:right;" onclick="addInwardWarpRow()">+ Add Warp Row</button>
         </div>
+        <div id="inwardWarpRowsContainer"></div>
       </div>
       <div class="form-card" style="border-left:3px solid var(--green);">
-        <div class="form-section-title">🪡 Weft Details <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
-        <div class="form-grid">
-          <div class="form-group"><label>Count <span class="field-required">*</span></label>
-            <select id="inWeftCountSelect"><option value="">— Select Weft Count —</option></select>
-          </div>
-          <div class="form-group"><label>Colour <span class="field-required">*</span></label>
-            <select id="inWeftColourSelect"><option value="">— Select Weft Colour —</option></select>
-          </div>
-          <div class="form-group"><label>Qty (KG)</label><input type="number" id="inWeftKg" placeholder="0" /></div>
-          <div class="form-group"><label>Bundles</label><input type="number" id="inWeftBundles" placeholder="0" /></div>
+        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
+          <button type="button" class="btn btn-sm" style="float:right;" onclick="addInwardWeftRow()">+ Add Weft Row</button>
         </div>
+        <div id="inwardWeftRowsContainer"></div>
       </div>
       <div class="form-card">
         <div class="form-section-title">📦 Additional Details</div>
@@ -1247,7 +1226,7 @@ input, select, textarea, button { font-family: inherit; }
       <div class="table-card" style="margin-top:1.5rem;">
         <div class="table-toolbar"><span class="table-toolbar-title">My Inward Entries</span></div>
         <table class="data-table">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Count</th><th>Warp Colour</th><th>Warp KG</th><th>Weft Count</th><th>Weft Colour</th><th>Weft KG</th><th>Next Process</th><th>Done</th><th>Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th></tr></thead>
           <tbody id="myInwardBody"></tbody>
         </table>
       </div>
@@ -1269,6 +1248,7 @@ input, select, textarea, button { font-family: inherit; }
               <option value="">— Select Process —</option>
               <option value="warping">Warping</option>
               <option value="winding">Winding</option>
+              <option value="weaving">Weaving</option>
             </select>
           </div>
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="outPO" placeholder="PO-2024-001" oninput="populateOutwardFromPO()" /></div>
@@ -1420,8 +1400,8 @@ input, select, textarea, button { font-family: inherit; }
     <div id="manufacturingPage" class="page">
       <div class="page-header">
         <div class="page-header-left">
-          <h1 class="page-title">Manufacturing & Inventory Inward</h1>
-          <p class="page-sub">Daily fabric production log per loom · Running totals auto-calculated · Inventory inward captured with manufacturing</p>
+          <h1 class="page-title">Manufacturing</h1>
+          <p class="page-sub">Daily fabric production log per loom · Running totals auto-calculated · Woven fabric is received automatically on completion</p>
         </div>
       </div>
       <div class="form-card">
@@ -1460,22 +1440,18 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card" style="margin-top:1rem;">
-        <div class="form-section-title">📦 Inventory Inward (Captured with Manufacturing)</div>
         <div class="form-grid">
-          <div class="form-group"><label>Fabric Metres <span class="field-required">*</span></label><input type="number" id="mfgFabricMetres" placeholder="0" /></div>
-          <div class="form-group"><label>Received Date <span class="field-required">*</span></label><input type="date" id="mfgReceivedDate" /></div>
-          <div class="form-group"><label>Received By</label><input type="text" id="mfgReceivedBy" placeholder="Staff name" /></div>
-          <div class="form-group" style="grid-column:span 1;"><label>Remarks</label><textarea id="mfgRemarks" placeholder="Notes..."></textarea></div>
+          <div class="form-group" style="grid-column:span 2;"><label>Remarks</label><textarea id="mfgRemarks" placeholder="Notes..."></textarea></div>
         </div>
       </div>
       <div class="form-actions">
         <button class="btn" onclick="clearMfgForm()">Clear</button>
-        <button class="btn btn-primary" onclick="saveMfg()">💾 Save Manufacturing & Inventory</button>
+        <button class="btn btn-primary" onclick="saveMfg()">💾 Save Manufacturing</button>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
         <div class="table-toolbar"><span class="table-toolbar-title">Manufacturing Log</span></div>
         <table class="data-table">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Fabric m</th><th>Total Mfg.</th><th>Balance</th><th>Done</th><th>Log Date</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Total Mfg.</th><th>Balance</th><th>Done</th><th>Log Date</th></tr></thead>
           <tbody id="myMfgBody"></tbody>
         </table>
       </div>
@@ -1492,7 +1468,7 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">One delivery per PO per Cycle · Auto-built from Inventory Inward records · DC auto-generated</p>
         </div>
       </div>
-      <div class="brand-box">⚠️ <strong>Delivery Rule:</strong> All Loom Allocations for this PO+Cycle must have weaving marked Done AND Inventory Inward entries must exist. On save, all looms are automatically freed.</div>
+      <div class="brand-box">⚠️ <strong>Delivery Rule:</strong> Delivery is allowed once fabric has been manufactured for this PO+Cycle. Enter pieces (No / Metres / Weight). On save, looms used for this PO+Cycle are freed.</div>
       <div class="form-card" style="border:2px solid var(--brand);">
         <div class="form-section-title" style="color:var(--brand);">📋 Delivery Header</div>
         <div class="form-grid">
@@ -1519,19 +1495,27 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:.75rem;">PIECE TABLE (Manual Entry)</div>
         <table class="data-table" id="delPieceTable">
-          <thead><tr><th>Type</th><th>Piece No.</th><th>Metres</th></tr></thead>
+          <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th><th></th></tr></thead>
           <tbody id="delPieceBody">
             <tr>
-              <td><input type="text" class="piece-type" placeholder="Type" /></td>
               <td><input type="text" class="piece-no" placeholder="1" /></td>
-              <td><input type="number" class="piece-metres" placeholder="0" /></td>
+              <td><input type="number" class="piece-metres" placeholder="0" oninput="recalcPieceTotals()" /></td>
+              <td><input type="number" class="piece-weight" placeholder="0" oninput="recalcPieceTotals()" /></td>
+              <td><button class="btn-remove-beam" onclick="this.closest('tr').remove();recalcPieceTotals()">×</button></td>
             </tr>
             <tr>
-              <td><input type="text" class="piece-type" placeholder="Type" /></td>
               <td><input type="text" class="piece-no" placeholder="2" /></td>
-              <td><input type="number" class="piece-metres" placeholder="0" /></td>
+              <td><input type="number" class="piece-metres" placeholder="0" oninput="recalcPieceTotals()" /></td>
+              <td><input type="number" class="piece-weight" placeholder="0" oninput="recalcPieceTotals()" /></td>
+              <td><button class="btn-remove-beam" onclick="this.closest('tr').remove();recalcPieceTotals()">×</button></td>
             </tr>
           </tbody>
+          <tfoot><tr style="font-weight:700;background:var(--surface);">
+            <td>Total: <span id="delTotPieces">0</span> pcs</td>
+            <td><span id="delTotMetres">0</span> m</td>
+            <td><span id="delTotWeight">0</span> kg</td>
+            <td></td>
+          </tr></tfoot>
         </table>
         <button class="btn btn-sm" style="margin-top:0.5rem;" onclick="addDeliveryPieceRow()">+ Add Piece Row</button>
       </div>
@@ -1557,7 +1541,7 @@ input, select, textarea, button { font-family: inherit; }
       <div class="table-card" style="margin-top:1.5rem;">
         <div class="table-toolbar"><span class="table-toolbar-title">My Delivery Entries</span></div>
         <table class="data-table">
-          <thead><tr><th>DC No.</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>Pieces</th><th>Total Metres</th><th>Vehicle</th><th>Date</th><th>DC Slip</th></tr></thead>
+          <thead><tr><th>DC No.</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>Pieces</th><th>Total Metres</th><th>Total Weight</th><th>Vehicle</th><th>Date</th><th>DC Slip</th></tr></thead>
           <tbody id="myDeliveryBody"></tbody>
         </table>
       </div>
@@ -2121,6 +2105,37 @@ function renderPOTable() {
 // ════════════════════════════════════════════════════════════════
 // INWARD
 // ════════════════════════════════════════════════════════════════
+// One editable warp/weft row in the Inward form. `data` pre-fills it from the PO.
+function inwardRowHTML(kind, data){
+  data=data||{};
+  return `
+    <div class="form-group"><label style="font-size:11px;">Count</label><input type="text" class="in-${kind}-count" placeholder="e.g. 40s" value="${data.count||''}" /></div>
+    <div class="form-group"><label style="font-size:11px;">Colour</label><input type="text" class="in-${kind}-colour" placeholder="e.g. White" value="${data.colour||''}" /></div>
+    <div class="form-group"><label style="font-size:11px;">Qty (KG)</label><input type="number" class="in-${kind}-qty" placeholder="0" value="${data.qtyKg??''}" /></div>
+    <div class="form-group"><label style="font-size:11px;">Bundles</label><input type="number" class="in-${kind}-bundles" placeholder="0" value="${data.bundles??''}" /></div>
+    <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()">×</button>`;
+}
+function addInwardWarpRow(data){
+  const r=document.createElement('div'); r.className='dynamic-row warp-row';
+  r.innerHTML=inwardRowHTML('warp',data);
+  document.getElementById('inwardWarpRowsContainer').appendChild(r);
+}
+function addInwardWeftRow(data){
+  const r=document.createElement('div'); r.className='dynamic-row weft-row';
+  r.innerHTML=inwardRowHTML('weft',data);
+  document.getElementById('inwardWeftRowsContainer').appendChild(r);
+}
+function collectInwardRows(kind){
+  const rows=[];
+  document.querySelectorAll(`#inward${kind==='warp'?'Warp':'Weft'}RowsContainer .dynamic-row`).forEach(r=>{
+    const count=r.querySelector(`.in-${kind}-count`).value.trim();
+    const colour=r.querySelector(`.in-${kind}-colour`).value.trim();
+    const qtyKg=parseFloat(r.querySelector(`.in-${kind}-qty`).value)||0;
+    const bundles=parseInt(r.querySelector(`.in-${kind}-bundles`).value)||0;
+    if(count||colour||qtyKg||bundles) rows.push({count,colour,qtyKg,bundles});
+  });
+  return rows;
+}
 function populateInwardFromPO() {
   const poNum=document.getElementById('inPO').value.trim();
   const po=DB.pos.find(p=>p.poNumber===poNum);
@@ -2129,12 +2144,11 @@ function populateInwardFromPO() {
   const cycles=DB.inwards.filter(i=>i.poNumber===poNum).map(i=>i.cycleNumber);
   const nextCycle=(cycles.length?Math.max(...cycles):0)+1;
   document.getElementById('inCycleDisplay').textContent='Cycle '+nextCycle;
-  populateSelectEl('inWarpCountSelect',[...new Set(po.warpRows.map(w=>w.count).filter(Boolean))]);
-  populateSelectEl('inWarpColourSelect',[...new Set(po.warpRows.map(w=>w.colour).filter(Boolean))]);
-  populateSelectEl('inWeftCountSelect',[...new Set(po.weftRows.map(w=>w.count).filter(Boolean))]);
-  populateSelectEl('inWeftColourSelect',[...new Set(po.weftRows.map(w=>w.colour).filter(Boolean))]);
-  // also fill the count/colour text fields if present on this PO
-  setIfExists('inReedPick', (po.reed||'') + (po.pick? '×'+po.pick : ''));
+  // Pre-fill warp/weft rows from the PO specification (editable).
+  document.getElementById('inwardWarpRowsContainer').innerHTML='';
+  document.getElementById('inwardWeftRowsContainer').innerHTML='';
+  (po.warpRows&&po.warpRows.length?po.warpRows:[{}]).forEach(r=>addInwardWarpRow(r));
+  (po.weftRows&&po.weftRows.length?po.weftRows:[{}]).forEach(r=>addInwardWeftRow(r));
 }
 function setIfExists(id, val){ const e=document.getElementById(id); if(e){ if('value' in e) e.value=val; else e.textContent=(val===''||val==null)?'—':val; } }
 // The newest cycle for a PO (highest cycle_number), shared by all the form pre-fills.
@@ -2149,26 +2163,23 @@ function populateSelectEl(id, opts) {
 }
 async function saveInward() {
   const poNum=document.getElementById('inPO').value.trim();
-  const nextProc=document.getElementById('inNextProcess').value;
+  const location=document.getElementById('inLocation').value.trim();
   if(!poNum){showToast('PO Number required');return;}
-  if(!nextProc){showToast('Next Process required');return;}
+  if(!location){showToast('Location required');return;}
+  const warpRows=collectInwardRows('warp');
+  const weftRows=collectInwardRows('weft');
+  if(!warpRows.length && !weftRows.length){showToast('At least one warp or weft row required');return;}
 
   try {
     const response = await fetchAPI('/inwards', {
       method: 'POST',
       body: JSON.stringify({
         poNumber:poNum,
-        warpCount:document.getElementById('inWarpCountSelect').value,
-        warpColour:document.getElementById('inWarpColourSelect').value,
-        warpKg:parseFloat(document.getElementById('inWarpKg').value)||0,
-        warpBundles:parseInt(document.getElementById('inWarpBundles').value)||0,
-        weftCount:document.getElementById('inWeftCountSelect').value,
-        weftColour:document.getElementById('inWeftColourSelect').value,
-        weftKg:parseFloat(document.getElementById('inWeftKg').value)||0,
-        weftBundles:parseInt(document.getElementById('inWeftBundles').value)||0,
+        warpRows:warpRows,
+        weftRows:weftRows,
+        location:location,
         rmNumber:document.getElementById('inRM').value.trim(),
         coneBagCount:parseInt(document.getElementById('inConeBag').value)||0,
-        nextProcess:nextProc,
         cost:parseFloat(document.getElementById('inCost').value)||0,
         receivedBy:document.getElementById('inReceivedBy').value.trim(),
         isDone:document.getElementById('inwardCheck').classList.contains('checked'),
@@ -2189,22 +2200,27 @@ async function saveInward() {
   }
 }
 function clearInwardForm() {
-  ['inPO','inWarpKg','inWarpBundles','inWeftKg','inWeftBundles','inRM','inConeBag','inCost','inReceivedBy'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['inWarpCountSelect','inWarpColourSelect','inWeftCountSelect','inWeftColourSelect','inNextProcess'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});
+  ['inPO','inLocation','inRM','inConeBag','inCost','inReceivedBy'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('inwardWarpRowsContainer').innerHTML='';
+  document.getElementById('inwardWeftRowsContainer').innerHTML='';
+  document.getElementById('inPODesc').textContent='—';
   document.getElementById('inCycleDisplay').textContent='Auto-assigned';
   document.getElementById('inwardCheck').classList.remove('checked');
+}
+function rowsSummary(rows){
+  if(!rows||!rows.length) return '—';
+  return rows.map(r=>`${r.count||'?'}/${r.colour||'?'}${r.qtyKg?' · '+r.qtyKg+'kg':''}`).join('<br>');
 }
 function renderInwardTable() {
   const tbody=document.getElementById('myInwardBody');
   const poDescMap=DB.pos.reduce((m,p)=>{m[p.poNumber]=p.description;return m;},{});
   tbody.innerHTML=DB.inwards.map(i=>`<tr>
     <td><strong>${i.poNumber}</strong></td><td>${poDescMap[i.poNumber]||'—'}</td><td>${badge('purple','Cycle '+i.cycleNumber)}</td>
-    <td>${i.warpCount||'—'}</td><td>${i.warpColour||'—'}</td><td>${i.warpKg} kg</td>
-    <td>${i.weftCount||'—'}</td><td>${i.weftColour||'—'}</td><td>${i.weftKg} kg</td>
-    <td>${badge(i.nextProcess==='warping'?'blue':i.nextProcess==='winding'?'green':'amber', i.nextProcess||'—')}</td>
+    <td>${rowsSummary(i.warpRows)}</td><td>${rowsSummary(i.weftRows)}</td>
+    <td>${i.location||'—'}</td><td>${i.rmNumber||'—'}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${i.entryDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No inward entries yet</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No inward entries yet</p></div></td></tr>';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2212,8 +2228,11 @@ function renderInwardTable() {
 // ════════════════════════════════════════════════════════════════
 function handleOutwardProcessChange() {
   const proc=document.getElementById('outwardProcess').value;
-  document.getElementById('outwardWarpFields').style.display=proc==='warping'?'':'none';
-  document.getElementById('outwardWeftFields').style.display=proc==='winding'?'':'none';
+  // warping → warp only · winding → BOTH warp+weft · weaving → weft only
+  const showWarp = proc==='warping' || proc==='winding';
+  const showWeft = proc==='winding' || proc==='weaving';
+  document.getElementById('outwardWarpFields').style.display=showWarp?'':'none';
+  document.getElementById('outwardWeftFields').style.display=showWeft?'':'none';
 }
 function populateOutwardFromPO() {
   const poNum=document.getElementById('outPO').value.trim();
@@ -2228,6 +2247,7 @@ function populateOutwardFromPO() {
     outwardWarpRowCount=0; outwardWeftRowCount=0;
     // Add one warp and one weft row by default
     addOutwardWarpRow(); addOutwardWeftRow();
+    handleOutwardProcessChange();
   } else {
     document.getElementById('outPODesc').textContent='—';
     document.getElementById('outwardWarpRowsContainer').innerHTML='';
@@ -2309,12 +2329,15 @@ function handleReturnTypeChange() {
 function addBeamEntry() {
   if(beamRowCount>=5){showToast('Maximum 5 beam entries allowed');return;}
   beamRowCount++;
+  // Total Ends auto-fills from the PO specification for warping returns.
+  const po=DB.pos.find(p=>p.poNumber===document.getElementById('retPO').value.trim());
+  const ends=(po&&po.totalEnds)?po.totalEnds:'';
   const r=document.createElement('div');
   r.className='beam-entry-row'; r.id='beamRow'+beamRowCount;
   r.innerHTML=`
     <div class="beam-number">Beam ${beamRowCount}</div>
     <div><label>Beam Metres</label><input type="number" class="beam-metres" placeholder="0" /></div>
-    <div><label>Total Ends</label><input type="number" class="beam-ends" placeholder="0" /></div>
+    <div><label>Total Ends <small style="color:var(--text3);">(from PO)</small></label><input type="number" class="beam-ends" placeholder="0" value="${ends}" /></div>
     <button class="btn-remove-beam" onclick="this.parentElement.remove();updateBeamCountHint();">×</button>
   `;
   document.getElementById('beamEntriesContainer').appendChild(r);
@@ -2495,20 +2518,18 @@ function loadMfgFromLoom() {
 async function saveMfg() {
   const loomNum=parseInt(document.getElementById('mfgLoomNum').value);
   const metres=parseFloat(document.getElementById('mfgMetresToday').value)||0;
-  const fabricMetres=parseFloat(document.getElementById('mfgFabricMetres').value)||0;
   if(!loomNum){showToast('Select a loom');return;}
   if(metres<=0){showToast('Metres produced must be >0');return;}
-  if(fabricMetres<=0){showToast('Fabric metres must be >0');return;}
   const isDone=document.getElementById('mfgDoneCheck').classList.contains('checked');
   try {
+    // Woven fabric is received into inventory automatically (fabric metres = metres produced).
     await fetchAPI('/manufacturing', {
       method: 'POST',
       body: JSON.stringify({
-        loomNumber:loomNum, metresToday:metres, fabricMetres:fabricMetres,
+        loomNumber:loomNum, metresToday:metres, fabricMetres:metres,
         logDate:document.getElementById('mfgLogDate').value||todayISO(),
         operatorName:document.getElementById('mfgOperator').value.trim(),
-        receivedDate:document.getElementById('mfgReceivedDate').value||null,
-        receivedBy:document.getElementById('mfgReceivedBy').value.trim(),
+        receivedDate:document.getElementById('mfgLogDate').value||todayISO(),
         remarks:document.getElementById('mfgRemarks').value.trim(),
         isDone:isDone
       }),
@@ -2526,7 +2547,7 @@ async function saveMfg() {
 }
 function clearMfgForm() {
   document.getElementById('mfgLoomNum').selectedIndex=0;
-  ['mfgMetresToday','mfgFabricMetres','mfgOperator','mfgReceivedBy','mfgRemarks'].forEach(id=>{document.getElementById(id).value='';});
+  ['mfgMetresToday','mfgOperator','mfgRemarks'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('mfgDoneCheck').classList.remove('checked');
   document.getElementById('mfgDetails').style.display='none';
   ['mfgPODisplay','mfgPODescDisplay','mfgCycleDisplay','mfgBeamDisplay'].forEach(id=>{document.getElementById(id).textContent='—';});
@@ -2537,10 +2558,10 @@ function renderMfgTable() {
   tbody.innerHTML=DB.mfgs.map(m=>`<tr>
     <td><strong>${m.poNumber||'—'}</strong></td><td>${poDescMap[m.poNumber]||'—'}</td><td>${badge('purple','Cycle '+(m.cycleNumber||'1'))}</td>
     <td>Loom <strong>${m.loomNumber}</strong></td><td style="font-family:monospace;">${m.beamId||'—'}</td>
-    <td>${m.metresToday} m</td><td>${m.fabricMetres||'—'} m</td><td>${m.totalManufactured} m</td><td>${m.balanceQty} m</td>
+    <td>${m.metresToday} m</td><td>${m.totalManufactured} m</td><td>${m.balanceQty} m</td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
     <td>${m.logDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No manufacturing log yet</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No manufacturing log yet</p></div></td></tr>';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2603,16 +2624,27 @@ function populateDeliveryFromPO() {
   if(body){
     body.innerHTML = inv.length
       ? inv.map((x,i)=>`<tr>
-          <td><input type="text" class="piece-type" value="Fabric" /></td>
           <td><input type="text" class="piece-no" value="${i+1}" /></td>
-          <td><input type="number" class="piece-metres" value="${x.fabricMetres}" /></td>
-          <td><button class="btn-remove-beam" onclick="this.closest('tr').remove()">×</button></td>
+          <td><input type="number" class="piece-metres" value="${x.fabricMetres}" oninput="recalcPieceTotals()" /></td>
+          <td><input type="number" class="piece-weight" value="${x.weightKg||''}" placeholder="0" oninput="recalcPieceTotals()" /></td>
+          <td><button class="btn-remove-beam" onclick="this.closest('tr').remove();recalcPieceTotals()">×</button></td>
         </tr>`).join('')
       : '<tr><td colspan="4"><div class="empty-state"><p>No finished fabric yet for this PO/cycle — complete weaving first.</p></div></td></tr>';
   }
-  const total = inv.reduce((s,x)=>s+(parseFloat(x.fabricMetres)||0),0);
-  setIfExists('delNoPieces', inv.length);       // numeric — these are <input type=number>
-  setIfExists('delGrandTotal', total || 0);
+  recalcPieceTotals();
+}
+// Live footer totals for the delivery piece table (No / Metres / Weight).
+function recalcPieceTotals(){
+  let pcs=0, metres=0, weight=0;
+  document.querySelectorAll('#delPieceBody tr').forEach(row=>{
+    const m=parseFloat(row.querySelector('.piece-metres')?.value)||0;
+    const w=parseFloat(row.querySelector('.piece-weight')?.value)||0;
+    if(m>0){ pcs++; metres+=m; weight+=w; }
+  });
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=Math.round(v*100)/100;};
+  set('delTotPieces',pcs); set('delTotMetres',metres); set('delTotWeight',weight);
+  setIfExists('delNoPieces', pcs);
+  setIfExists('delGrandTotal', Math.round(metres*100)/100);
 }
 async function saveDelivery() {
   const poNum=document.getElementById('delPO').value.trim();
@@ -2624,15 +2656,16 @@ async function saveDelivery() {
     // Get piece data from manual entry
     const piecesData=[];
     document.querySelectorAll('#delPieceBody tr').forEach((row,i)=>{
-      const type=row.querySelector('.piece-type')?.value||'';
       const pieceNo=row.querySelector('.piece-no')?.value||String(i+1);
       const metres=parseFloat(row.querySelector('.piece-metres')?.value)||0;
+      const weight=parseFloat(row.querySelector('.piece-weight')?.value)||0;
       if(metres>0){
-        piecesData.push({type,pieceNo,metres});
+        piecesData.push({pieceNo,metres,weight});
       }
     });
 
     const totalMetres=piecesData.reduce((s,p)=>s+p.metres,0);
+    const totalWeight=piecesData.reduce((s,p)=>s+p.weight,0);
     const noPieces=piecesData.length;
 
     // Get next DC number
@@ -2656,6 +2689,7 @@ async function saveDelivery() {
         piecesData:piecesData,
         noPieces:noPieces,
         grandTotalMetres:totalMetres,
+        totalWeight:totalWeight,
         vehicleNumber:document.getElementById('delVehicle').value,
         driverName:document.getElementById('delDriver').value,
         receiverName:document.getElementById('delReceiver').value,
@@ -2678,12 +2712,15 @@ async function saveDelivery() {
 }
 function addDeliveryPieceRow() {
   const tbody=document.getElementById('delPieceBody');
+  // Drop any "empty-state" placeholder row before adding a real one.
+  if(tbody.querySelector('.empty-state')) tbody.innerHTML='';
   const rowCount=tbody.querySelectorAll('tr').length+1;
   const tr=document.createElement('tr');
   tr.innerHTML=`
-    <td><input type="text" class="piece-type" placeholder="Type" /></td>
     <td><input type="text" class="piece-no" value="${rowCount}" placeholder="${rowCount}" /></td>
-    <td><input type="number" class="piece-metres" placeholder="0" /></td>
+    <td><input type="number" class="piece-metres" placeholder="0" oninput="recalcPieceTotals()" /></td>
+    <td><input type="number" class="piece-weight" placeholder="0" oninput="recalcPieceTotals()" /></td>
+    <td><button class="btn-remove-beam" onclick="this.closest('tr').remove();recalcPieceTotals()">×</button></td>
   `;
   tbody.appendChild(tr);
 }
@@ -2696,15 +2733,16 @@ function previewDCSlip() {
   // Get piece data from manual entry
   const piecesData=[];
   document.querySelectorAll('#delPieceBody tr').forEach((row,i)=>{
-    const type=row.querySelector('.piece-type')?.value||'';
     const pieceNo=row.querySelector('.piece-no')?.value||String(i+1);
     const metres=parseFloat(row.querySelector('.piece-metres')?.value)||0;
+    const weight=parseFloat(row.querySelector('.piece-weight')?.value)||0;
     if(metres>0){
-      piecesData.push({type,pieceNo,metres});
+      piecesData.push({pieceNo,metres,weight});
     }
   });
 
   const totalMetres=piecesData.reduce((s,p)=>s+p.metres,0);
+  const totalWeight=piecesData.reduce((s,p)=>s+p.weight,0);
   const noPieces=piecesData.length;
 
   document.getElementById('dcSlipContent').innerHTML=`
@@ -2733,13 +2771,10 @@ function previewDCSlip() {
       <div class="dc-meta-item"><span class="dc-meta-label">Receiver:</span>${document.getElementById('delReceiver').value||'—'}</div>
     </div>
     <table class="dc-piece-table">
-      <thead><tr><th>Type</th><th>Piece No.</th><th>Metres</th></tr></thead>
-      <tbody>${piecesData.map(p=>`<tr><td>${p.type}</td><td>${p.pieceNo}</td><td>${p.metres} m</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
+      <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
+      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo}</td><td>${p.metres} m</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
+      <tfoot><tr style="font-weight:700;border-top:2px solid black;"><td>Total: ${noPieces} pcs</td><td>${totalMetres} m</td><td>${Math.round(totalWeight*100)/100} kg</td></tr></tfoot>
     </table>
-    <div style="display:flex;justify-content:space-between;font-weight:700;border-top:2px solid black;padding-top:.5rem;margin-top:.5rem;">
-      <span>No. of Pieces: ${noPieces}</span>
-      <span>Grand Total Metres: ${totalMetres} m</span>
-    </div>
     ${document.getElementById('delRemarks').value?`<div style="margin-top:.75rem;"><span style="font-weight:700;">Remarks:</span> ${document.getElementById('delRemarks').value}</div>`:''}
     <div class="dc-footer">
       <div><div class="dc-sig-line">Prepared By</div></div>
@@ -2762,10 +2797,11 @@ function renderDeliveryTable() {
     <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${d.description||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
     <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
     <td>${d.noPieces}</td><td><strong>${d.grandTotalMetres} m</strong></td>
+    <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
     <td><button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button></td>
-  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
 }
 function showDCSlip(id) {
   const d=DB.deliveries.find(x=>x.id===id);
@@ -2782,11 +2818,16 @@ function showDCSlip(id) {
       <div class="detail-item"><label>Reed×Pick</label><div class="dval">${d.reedPick||'—'}</div></div>
       <div class="detail-item"><label>Total Pieces</label><div class="dval">${d.noPieces}</div></div>
       <div class="detail-item"><label>Total Metres</label><div class="dval" style="color:var(--brand);font-size:18px;">${d.grandTotalMetres} m</div></div>
+      <div class="detail-item"><label>Total Weight</label><div class="dval">${d.totalWeight!=null?d.totalWeight+' kg':'—'}</div></div>
       <div class="detail-item"><label>Vehicle</label><div class="dval">${d.vehicleNumber||'—'}</div></div>
       <div class="detail-item"><label>Driver</label><div class="dval">${d.driverName||'—'}</div></div>
     </div>
     <div style="margin-top:1rem;"><div class="detail-section-title">Piece Table</div>
-      <table class="data-table">${d.piecesData.map(p=>`<tr><td>${p.type||'—'}</td><td>${p.pieceNo}</td><td>${p.metres} m</td></tr>`).join('')}</table>
+      <table class="data-table">
+        <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
+        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo}</td><td>${p.metres} m</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
+        <tfoot><tr style="font-weight:700;"><td>Total: ${d.noPieces} pcs</td><td>${d.grandTotalMetres} m</td><td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td></tr></tfoot>
+      </table>
     </div>
     ${d.remarks?`<div style="margin-top:1rem;"><strong>Remarks:</strong> ${d.remarks}</div>`:''}
   </div>`;
@@ -2977,13 +3018,12 @@ function renderAdminWarehouse() {
   const poDescMap=DB.pos.reduce((m,p)=>{m[p.poNumber]=p.description;return m;},{});
   document.getElementById('adminInwardBody').innerHTML=DB.inwards.map(i=>`<tr>
     <td><strong>${i.poNumber}</strong></td><td>${poDescMap[i.poNumber]||'—'}</td><td>${badge('purple','Cycle '+i.cycleNumber)}</td>
-    <td>${i.warpCount||'—'}</td><td>${i.warpColour||'—'}</td><td>${i.warpKg} kg</td>
-    <td>${i.weftCount||'—'}</td><td>${i.weftColour||'—'}</td><td>${i.weftKg} kg</td>
+    <td>${rowsSummary(i.warpRows)}</td><td>${rowsSummary(i.weftRows)}</td>
+    <td>${i.location||'—'}</td>
     <td>${i.rmNumber||'—'}</td>
-    <td>${badge(i.nextProcess==='warping'?'blue':'green',i.nextProcess||'—')}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${i.entryDate||'—'}</td>
-  </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
@@ -3034,10 +3074,11 @@ function renderAdminDelivery() {
     <td><strong>${d.dcNumber}</strong></td><td>${d.poNumber}</td><td>${poDescMap[d.poNumber]||'—'}</td><td>${badge('purple','Cycle '+d.cycleNumber)}</td>
     <td>${d.customerName}</td><td style="font-family:monospace;">${d.reedPick||'—'}</td>
     <td>${d.noPieces}</td><td><strong>${d.grandTotalMetres} m</strong></td>
+    <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${d.deliveryDate||'—'}</td>
     <td><button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button></td>
-  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
 }
 
 function renderUserMgmt() {
