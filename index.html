@@ -1773,6 +1773,8 @@ function logout() {
   document.getElementById('userApp').classList.remove('active');
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
+  DB.currentRole=null;
+  selectRole('admin');   // re-sync the role variable with the default-active Admin tab (avoids "Role mismatch")
 }
 
 // ════════════════════════════════════════════════════════════════
