@@ -801,10 +801,10 @@ input, select, textarea, button { font-family: inherit; }
     </div>
     <div class="sidebar-footer">
       <div class="user-chip">
-        <div class="user-avatar">A</div>
+        <div class="user-avatar" id="adminChipAvatar">A</div>
         <div class="user-info">
-          <div class="user-name">Admin</div>
-          <div class="user-role">Administrator</div>
+          <div class="user-name" id="adminChipName">Admin</div>
+          <div class="user-role" id="adminChipRole">Administrator</div>
         </div>
         <button class="logout-btn" onclick="logout()">Out</button>
       </div>
@@ -1076,10 +1076,10 @@ input, select, textarea, button { font-family: inherit; }
     </div>
     <div class="sidebar-footer">
       <div class="user-chip">
-        <div class="user-avatar" style="background:var(--green);">U</div>
+        <div class="user-avatar" style="background:var(--green);" id="userChipAvatar">U</div>
         <div class="user-info">
-          <div class="user-name">Staff User</div>
-          <div class="user-role">Warehouse · Production</div>
+          <div class="user-name" id="userChipName">Staff User</div>
+          <div class="user-role" id="userChipRole">Warehouse · Production</div>
         </div>
         <button class="logout-btn" onclick="logout()">Out</button>
       </div>
@@ -1259,7 +1259,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div id="outwardWarpFields" class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
+        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="outwardWarpRowsContainer"></div>
         <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addOutwardWarpRow()">+ Add Warp Count &amp; Colour</button>
         <div class="form-grid" style="margin-top:1rem;">
@@ -1269,7 +1269,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div id="outwardWeftFields" class="form-card" style="border-left:3px solid var(--green);display:none;">
-        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
+        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="outwardWeftRowsContainer"></div>
         <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addOutwardWeftRow()">+ Add Weft Count &amp; Colour</button>
         <div class="form-grid" style="margin-top:1rem;">
@@ -1325,10 +1325,17 @@ input, select, textarea, button { font-family: inherit; }
         <div style="font-size:11px;color:var(--text3);margin-top:0.5rem;text-align:center;" id="beamCountHint">0 / 5 beams added</div>
         <div class="info-box" style="margin-top:1rem;">📌 Beam IDs will be auto-generated as B001, B002… (sequential per PO+Cycle) and linked to Loom Allocation.</div>
       </div>
-      <div id="retWeftFields" class="form-card" style="border-left:3px solid var(--green);display:none;">
-        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
-        <div id="windingWeftRowsContainer"></div>
-        <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addWindingWeftRow()">+ Add Weft Count &amp; Colour</button>
+      <div id="retWeftFields" style="display:none;">
+        <div class="form-card" style="border-left:3px solid var(--brand);">
+          <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+          <div id="windingWarpRowsContainer"></div>
+          <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addWindingWarpRow()">+ Add Warp Count &amp; Colour</button>
+        </div>
+        <div class="form-card" style="border-left:3px solid var(--green);">
+          <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+          <div id="windingWeftRowsContainer"></div>
+          <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addWindingWeftRow()">+ Add Weft Count &amp; Colour</button>
+        </div>
       </div>
       <div class="form-card">
         <div class="form-grid">
@@ -1374,7 +1381,7 @@ input, select, textarea, button { font-family: inherit; }
           <div class="form-group"><label>Allocation Date</label><input type="date" id="laDate" /></div>
           <div class="form-group"><label>Expected Done</label><input type="date" id="laExpDone" /></div>
         </div>
-        <div class="form-section-title" style="margin-top:1rem;">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from PO yarn data</small></div>
+        <div class="form-section-title" style="margin-top:1rem;">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="loomWeftRowsContainer"></div>
         <button class="btn" style="margin-top:.5rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addLoomWeftRow()">+ Add Weft Count &amp; Colour</button>
         <div class="form-actions" style="margin-top:1.5rem;">
@@ -1709,6 +1716,7 @@ async function doLogin() {
       localStorage.setItem('token', response.accessToken);
       await loadAllData();
       DB.currentUser = response.user.fullName;
+      DB.currentUserObj = response.user;
       DB.currentRole = currentRole;
       enterApp(currentRole);
     } else {
@@ -1724,6 +1732,15 @@ async function doLogin() {
 function enterApp(role) {
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('registerScreen').style.display='none';
+  // Show the actual logged-in user in the sidebar chip (name, role/dept, initial).
+  const u=DB.currentUserObj||{};
+  const name=u.fullName||DB.currentUser||(role==='admin'?'Admin':'Staff User');
+  const sub=u.department||(role==='admin'?'Administrator':'Staff');
+  const pfx=role==='admin'?'admin':'user';
+  const setTxt=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
+  setTxt(pfx+'ChipName',name);
+  setTxt(pfx+'ChipRole',sub);
+  setTxt(pfx+'ChipAvatar',(name.trim()[0]||'U').toUpperCase());
   if (role === 'admin') {
     document.getElementById('userApp').classList.remove('active');
     document.getElementById('adminApp').classList.add('active');
@@ -1752,6 +1769,7 @@ async function restoreSession() {
   try {
     const me = await fetchAPI('/me');           // 401 if expired -> caught below
     DB.currentUser = me.fullName;
+    DB.currentUserObj = me;
     DB.currentRole = me.role;
     currentRole = me.role;
     await loadAllData();
@@ -1964,7 +1982,7 @@ function renderLoomGrid(containerId) {
     <div class="loom-cell ${l.status==='free'?'free':l.status==='occupied'?'occupied':'on-hold'}">
       <div class="loom-num">${l.loomNumber}</div>
       <div class="loom-status-text">${l.status.replace('_',' ')}</div>
-      <div class="loom-po">${l.currentPO||'—'}</div>
+      <div class="loom-po">${l.currentPo||'—'}</div>
     </div>
   `).join('');
   const free = DB.looms.filter(l=>l.status==='free').length;
@@ -1978,8 +1996,8 @@ function renderAdminLoomTable() {
   tbody.innerHTML = DB.looms.map(l=>`<tr>
     <td><strong>${l.loomNumber}</strong></td>
     <td>${l.status==='free'?badge('green','Free'):l.status==='occupied'?badge('red','Occupied'):badge('amber','On Hold')}</td>
-    <td>${l.currentPO||'—'}</td>
-    <td>${poDescMap[l.currentPO]||'—'}</td>
+    <td>${l.currentPo||'—'}</td>
+    <td>${poDescMap[l.currentPo]||'—'}</td>
     <td>${l.currentCycle||'—'}</td>
     <td>${l.currentBeam||'—'}</td>
     <td>${l.allocatedBy||'—'}</td>
@@ -2012,9 +2030,7 @@ function addLoomWeftRow() {
   loomWeftRowCount++;
   const r = document.createElement('div');
   r.className='dynamic-row weft-row'; r.id='lwr'+loomWeftRowCount;
-  const po=DB.pos.find(p=>p.poNumber===document.getElementById('laPoNum').value.trim());
-  const counts=po?[...new Set(po.weftRows.map(w=>w.count).filter(Boolean))]:[];
-  const colours=po?[...new Set(po.weftRows.map(w=>w.colour).filter(Boolean))]:[];
+  const {counts,colours}=inwardYarnOptions(document.getElementById('laPoNum').value.trim(),'weft');
   r.innerHTML=`
     <div class="form-group"><label style="font-size:11px;">Count</label>
       <select class="loom-weft-count"><option value="">— Select —</option>${counts.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
@@ -2027,9 +2043,7 @@ function addWindingWeftRow() {
   windingWeftRowCount++;
   const r = document.createElement('div');
   r.className='dynamic-row weft-row'; r.id='wwr'+windingWeftRowCount;
-  const po=DB.pos.find(p=>p.poNumber===document.getElementById('retPO').value.trim());
-  const counts=po?[...new Set(po.weftRows.map(w=>w.count).filter(Boolean))]:[];
-  const colours=po?[...new Set(po.weftRows.map(w=>w.colour).filter(Boolean))]:[];
+  const {counts,colours}=inwardYarnOptions(document.getElementById('retPO').value.trim(),'weft');
   r.innerHTML=`
     <div class="form-group"><label style="font-size:11px;">Count</label>
       <select class="winding-weft-count"><option value="">— Select —</option>${counts.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
@@ -2039,13 +2053,26 @@ function addWindingWeftRow() {
     <button class="btn-remove-row" onclick="this.parentElement.remove()">×</button>`;
   document.getElementById('windingWeftRowsContainer').appendChild(r);
 }
+let windingWarpRowCount=0;
+function addWindingWarpRow() {
+  windingWarpRowCount++;
+  const r = document.createElement('div');
+  r.className='dynamic-row warp-row'; r.id='wwarp'+windingWarpRowCount;
+  const {counts,colours}=inwardYarnOptions(document.getElementById('retPO').value.trim(),'warp');
+  r.innerHTML=`
+    <div class="form-group"><label style="font-size:11px;">Count</label>
+      <select class="winding-warp-count"><option value="">— Select —</option>${counts.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="form-group"><label style="font-size:11px;">Colour</label>
+      <select class="winding-warp-colour"><option value="">— Select —</option>${colours.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="form-group"><label style="font-size:11px;">Total Qty (KG)</label><input type="number" class="winding-warp-kg" placeholder="0" /></div>
+    <button class="btn-remove-row" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('windingWarpRowsContainer').appendChild(r);
+}
 function addOutwardWarpRow() {
   outwardWarpRowCount++;
   const r = document.createElement('div');
   r.className='dynamic-row warp-row'; r.id='owr'+outwardWarpRowCount;
-  const po=DB.pos.find(p=>p.poNumber===document.getElementById('outPO').value.trim());
-  const counts=po?[...new Set(po.warpRows.map(w=>w.count).filter(Boolean))]:[];
-  const colours=po?[...new Set(po.warpRows.map(w=>w.colour).filter(Boolean))]:[];
+  const {counts,colours}=inwardYarnOptions(document.getElementById('outPO').value.trim(),'warp');
   r.innerHTML=`
     <div class="form-group"><label style="font-size:11px;">Count</label>
       <select class="outward-warp-count"><option value="">— Select —</option>${counts.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
@@ -2060,9 +2087,7 @@ function addOutwardWeftRow() {
   outwardWeftRowCount++;
   const r = document.createElement('div');
   r.className='dynamic-row weft-row'; r.id='owfr'+outwardWeftRowCount;
-  const po=DB.pos.find(p=>p.poNumber===document.getElementById('outPO').value.trim());
-  const counts=po?[...new Set(po.weftRows.map(w=>w.count).filter(Boolean))]:[];
-  const colours=po?[...new Set(po.weftRows.map(w=>w.colour).filter(Boolean))]:[];
+  const {counts,colours}=inwardYarnOptions(document.getElementById('outPO').value.trim(),'weft');
   r.innerHTML=`
     <div class="form-group"><label style="font-size:11px;">Count</label>
       <select class="outward-weft-count"><option value="">— Select —</option>${counts.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
@@ -2199,15 +2224,29 @@ function populateInwardFromPO() {
   const cycles=DB.inwards.filter(i=>i.poNumber===poNum).map(i=>i.cycleNumber);
   const nextCycle=(cycles.length?Math.max(...cycles):0)+1;
   document.getElementById('inCycleDisplay').textContent='Cycle '+nextCycle;
-  // Pre-fill warp/weft rows from the PO specification (editable).
+  // Pre-fill warp/weft rows from the PO (editable). PO carries single Warp Count /
+  // Weft Count fields now (rows moved to Inward), so seed the row Count from those.
   document.getElementById('inwardWarpRowsContainer').innerHTML='';
   document.getElementById('inwardWeftRowsContainer').innerHTML='';
-  (po.warpRows&&po.warpRows.length?po.warpRows:[{}]).forEach(r=>addInwardWarpRow(r));
-  (po.weftRows&&po.weftRows.length?po.weftRows:[{}]).forEach(r=>addInwardWeftRow(r));
+  const warpSeed = (po.warpRows&&po.warpRows.length) ? po.warpRows : [{count: po.warpCount||''}];
+  const weftSeed = (po.weftRows&&po.weftRows.length) ? po.weftRows : [{count: po.weftCount||''}];
+  warpSeed.forEach(r=>addInwardWarpRow(r));
+  weftSeed.forEach(r=>addInwardWeftRow(r));
 }
 function setIfExists(id, val){ const e=document.getElementById(id); if(e){ if('value' in e) e.value=val; else e.textContent=(val===''||val==null)?'—':val; } }
 // The newest cycle for a PO (highest cycle_number), shared by all the form pre-fills.
 function latestInward(poNum){ return DB.inwards.filter(i=>i.poNumber===poNum).sort((a,b)=>b.cycleNumber-a.cycleNumber)[0]; }
+// Count/colour dropdown options for Outward/Return come from the actual received
+// material in the latest Inward entry (warp_rows/weft_rows), not the PO.
+function inwardYarnOptions(poNum, kind){
+  const inw=latestInward(poNum);
+  const rows=inw ? (kind==='warp'?inw.warpRows:inw.weftRows) : null;
+  const list=Array.isArray(rows)?rows:[];
+  return {
+    counts:[...new Set(list.map(w=>w.count).filter(Boolean))],
+    colours:[...new Set(list.map(w=>w.colour).filter(Boolean))],
+  };
+}
 function populateSelectEl(id, opts) {
   const s=document.getElementById(id);
   if(!s) return;
@@ -2367,18 +2406,26 @@ function populateReturnFromPO() {
   const poNum=document.getElementById('retPO').value.trim();
   const po=DB.pos.find(p=>p.poNumber===poNum);
   document.getElementById('retPODesc').textContent=po?po.description||'—':'—';
+  // If a return type was already chosen, rebuild its rows so Total Ends (from PO)
+  // and the warp/weft dropdowns (from inward) pick up the now-known PO.
+  if(po && document.getElementById('retType').value) handleReturnTypeChange();
 }
 function handleReturnTypeChange() {
   const t=document.getElementById('retType').value;
   document.getElementById('retWarpFields').style.display=t==='warping_return'?'':'none';
   document.getElementById('retWeftFields').style.display=t==='winding_return'?'':'none';
+  if(t==='warping_return'){
+    // Start with one beam row so Total Ends auto-fills from the PO immediately.
+    document.getElementById('beamEntriesContainer').innerHTML='';
+    beamRowCount=0;
+    addBeamEntry();
+  }
   if(t==='winding_return'){
-    const po=DB.pos.find(p=>p.poNumber===document.getElementById('retPO').value.trim());
-    if(po){
-      document.getElementById('windingWeftRowsContainer').innerHTML='';
-      windingWeftRowCount=0;
-      addWindingWeftRow();
-    }
+    document.getElementById('windingWarpRowsContainer').innerHTML='';
+    document.getElementById('windingWeftRowsContainer').innerHTML='';
+    windingWarpRowCount=0; windingWeftRowCount=0;
+    addWindingWarpRow();
+    addWindingWeftRow();
   }
 }
 function addBeamEntry() {
@@ -2419,13 +2466,21 @@ async function saveReturn() {
   if(!poNum||!retType||!dt){showToast('PO Number, Return Type and Date required');return;}
 
   try {
-    const beamEntries=getBeamEntries();
-    const weftRows=[];
-    document.querySelectorAll('#windingWeftRowsContainer .dynamic-row').forEach(r=>{
-      const c=r.querySelector('.winding-weft-count')?.value, col=r.querySelector('.winding-weft-colour')?.value;
-      const kg=parseFloat(r.querySelector('.winding-weft-kg')?.value)||0;
-      if(c||col) weftRows.push({count:c,colour:col,totalQtyKg:kg});
-    });
+    const beamEntries=getBeamEntries().filter(b=>b.beamMetres>0);  // a beam needs real metres
+    if(retType==='warping_return' && !beamEntries.length){
+      showToast('Add at least one beam with Beam Metres > 0'); return;
+    }
+    const collectRows=(sel,pfx)=>{
+      const rows=[];
+      document.querySelectorAll(sel+' .dynamic-row').forEach(r=>{
+        const c=r.querySelector('.'+pfx+'-count')?.value, col=r.querySelector('.'+pfx+'-colour')?.value;
+        const kg=parseFloat(r.querySelector('.'+pfx+'-kg')?.value)||0;
+        if(c||col) rows.push({count:c,colour:col,totalQtyKg:kg});
+      });
+      return rows;
+    };
+    const weftRows=collectRows('#windingWeftRowsContainer','winding-weft');
+    const warpRows=collectRows('#windingWarpRowsContainer','winding-warp');
 
     const response = await fetchAPI('/returns', {
       method: 'POST',
@@ -2434,6 +2489,7 @@ async function saveReturn() {
         returnType:retType,
         beamEntries:beamEntries,
         warpMetres:beamEntries.reduce((s,b)=>s+b.beamMetres,0),
+        warpRows:warpRows,
         weftRows:weftRows,
         operatorName:document.getElementById('retOperator').value.trim(),
         receiverName:document.getElementById('retReceiver').value.trim(),
@@ -2461,7 +2517,8 @@ function clearReturnForm() {
   document.getElementById('retWarpFields').style.display=''; document.getElementById('retWeftFields').style.display='none';
   document.getElementById('beamEntriesContainer').innerHTML='';
   document.getElementById('windingWeftRowsContainer').innerHTML='';
-  beamRowCount=0; windingWeftRowCount=0; updateBeamCountHint();
+  const ww=document.getElementById('windingWarpRowsContainer'); if(ww) ww.innerHTML='';
+  beamRowCount=0; windingWeftRowCount=0; windingWarpRowCount=0; updateBeamCountHint();
 }
 function renderReturnTable() {
   const tbody=document.getElementById('myReturnBody');
@@ -2555,10 +2612,10 @@ function loadMfgFromLoom() {
   const loomNum=parseInt(document.getElementById('mfgLoomNum').value);
   const loom=DB.looms.find(l=>l.loomNumber===loomNum);
   if(!loom||loom.status!=='occupied'){document.getElementById('mfgDetails').style.display='none';return;}
-  document.getElementById('mfgPODisplay').textContent=loom.currentPO||'—';
+  document.getElementById('mfgPODisplay').textContent=loom.currentPo||'—';
   document.getElementById('mfgCycleDisplay').textContent=loom.currentCycle?'Cycle '+loom.currentCycle:'—';
   document.getElementById('mfgBeamDisplay').textContent=loom.currentBeam||'—';
-  const po=DB.pos.find(p=>p.poNumber===loom.currentPO);
+  const po=DB.pos.find(p=>p.poNumber===loom.currentPo);
   document.getElementById('mfgPODescDisplay').textContent=po?po.description||'—':'—';
   const totalMfg=DB.mfgs.filter(m=>m.loomNumber===loomNum).reduce((s,m)=>s+m.metresToday,0);
   const orderQty=po?po.orderQty:0;
