@@ -676,9 +676,30 @@ input, select, textarea, button { font-family: inherit; }
         <button class="login-btn" onclick="doLogin()">Sign In →</button>
         <div style="text-align:center;margin-top:1rem;">
           <button class="link-btn" onclick="showRegister()">New account registration</button>
+          <span style="color:var(--text3);margin:0 .4rem;">·</span>
+          <button class="link-btn" onclick="showForgot()">Forgot password?</button>
         </div>
         <p class="login-hint">Demo: admin/admin123 &nbsp;·&nbsp; user/user123 &nbsp;·&nbsp; GSTIN: 33ERVPM7456N1ZP</p>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ FORGOT PASSWORD -->
+<div id="forgotScreen" style="display:none;">
+  <div class="register-box">
+    <div class="login-logo-wrap" style="justify-content:center;">
+      <div class="login-logo"><img src="pa_fabs_logo.jpg" alt="PA FABS" /></div>
+    </div>
+    <p class="login-heading" style="text-align:center;">Reset your password</p>
+    <p style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:1rem;">Verify your account with your username and email, then set a new password.</p>
+    <div class="form-group"><label>Username *</label><input type="text" id="fpUsername" placeholder="Your username" /></div>
+    <div class="form-group"><label>Email *</label><input type="email" id="fpEmail" placeholder="your@email.com" /></div>
+    <div class="form-group"><label>New Password *</label><input type="password" id="fpPassword" placeholder="Min 8 characters" /></div>
+    <div class="form-group"><label>Confirm New Password *</label><input type="password" id="fpConfirm" placeholder="Repeat new password" /></div>
+    <button class="register-btn" onclick="submitForgot()">Reset Password</button>
+    <div style="text-align:center;margin-top:1.25rem;">
+      <button class="link-btn" onclick="showLogin()">← Back to sign in</button>
     </div>
   </div>
 </div>
@@ -1798,8 +1819,23 @@ function logout() {
 // ════════════════════════════════════════════════════════════════
 // REGISTER
 // ════════════════════════════════════════════════════════════════
-function showRegister() { document.getElementById('loginScreen').style.display='none'; document.getElementById('registerScreen').style.display='flex'; }
-function showLogin() { document.getElementById('registerScreen').style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
+function showRegister() { document.getElementById('loginScreen').style.display='none'; document.getElementById('forgotScreen').style.display='none'; document.getElementById('registerScreen').style.display='flex'; }
+function showLogin() { document.getElementById('registerScreen').style.display='none'; const f=document.getElementById('forgotScreen'); if(f)f.style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
+function showForgot() { document.getElementById('loginScreen').style.display='none'; document.getElementById('registerScreen').style.display='none'; document.getElementById('forgotScreen').style.display='flex'; }
+async function submitForgot() {
+  const username=(document.getElementById('fpUsername').value||'').trim();
+  const email=(document.getElementById('fpEmail').value||'').trim();
+  const pw=document.getElementById('fpPassword').value;
+  const confirm=document.getElementById('fpConfirm').value;
+  if(!username||!email){showToast('Username and email required');return;}
+  if(!pw||pw.length<8){showToast('Password must be at least 8 characters');return;}
+  if(pw!==confirm){showToast('Passwords do not match');return;}
+  try{
+    await fetchAPI('/forgot-password',{method:'POST',body:JSON.stringify({username,email,newPassword:pw})});
+    showToast('Password reset — you can sign in now');
+    setTimeout(showLogin, 1400);
+  }catch(e){ showToast('Reset failed: '+e.message); }
+}
 function nextRegisterStep(step) {
   updateRegSteps(step);
   document.querySelectorAll('.register-step').forEach(s=>s.classList.remove('active'));
@@ -2839,22 +2875,15 @@ function addDeliveryPieceRow() {
 // Print ONLY one delivery challan — open an isolated window with just that DC's
 // markup so nothing else on the page (nav, tables, other challans) is printed.
 function printDCHTML(innerHTML, title){
-  const w=window.open('','_blank','width=800,height=900');
+  const w=window.open('','_blank','width=900,height=1000');
   if(!w){showToast('Allow pop-ups to print the DC');return;}
+  // Copy the app's own stylesheets so the print is identical to the preview.
+  const appStyles=[...document.querySelectorAll('style')].map(s=>s.innerHTML).join('\n');
   w.document.write(`<!doctype html><html><head><title>${title||'Delivery Challan'}</title>
-    <style>
-      body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}
-      table{width:100%;border-collapse:collapse;margin:12px 0;}
-      th,td{border:1px solid #333;padding:6px 10px;text-align:left;font-size:13px;}
-      tfoot td{font-weight:700;}
-      .dc-header,.dc-meta{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;margin-bottom:12px;}
-      .dc-company-name{font-size:22px;font-weight:800;}
-      .dc-slip-title h3{margin:0;} .dc-meta-item{font-size:13px;} .dc-meta-label{font-weight:700;margin-right:4px;}
-      .dc-footer{display:flex;justify-content:space-between;margin-top:48px;}
-      .dc-sig-line{border-top:1px solid #333;padding-top:4px;min-width:180px;text-align:center;font-size:12px;}
-      .dc-logo-img{max-height:60px;}
-    </style></head><body>${innerHTML}
-    <script>window.onload=function(){window.print();setTimeout(function(){window.close();},300);}<\/script>
+    <style>${appStyles}</style>
+    <style>@page{margin:14mm;} body{background:#fff;margin:0;padding:0;} .dc-slip{box-shadow:none;border:none;max-width:100%;margin:0;}</style>
+    </head><body><div class="dc-slip">${innerHTML}</div>
+    <script>window.onload=function(){window.print();setTimeout(function(){window.close();},400);}<\/script>
     </body></html>`);
   w.document.close();
 }
@@ -2880,11 +2909,28 @@ function previewDCSlip() {
     }
   });
 
-  const totalMetres=piecesData.reduce((s,p)=>s+p.metres,0);
-  const totalWeight=piecesData.reduce((s,p)=>s+p.weight,0);
-  const noPieces=piecesData.length;
-
-  document.getElementById('dcSlipContent').innerHTML=`
+  document.getElementById('dcSlipContent').innerHTML = dcSlipMarkup({
+    dcNumber: dcNum,
+    deliveryDate: document.getElementById('delDate').value||todayISO(),
+    customerName: document.getElementById('delCustomer').value,
+    designNo: document.getElementById('delDesignNo').value,
+    description: document.getElementById('delDescription').value,
+    reedPick: document.getElementById('delReedPick').value,
+    vehicleNumber: document.getElementById('delVehicle').value,
+    driverName: document.getElementById('delDriver').value,
+    receiverName: document.getElementById('delReceiver').value,
+    piecesData, remarks: document.getElementById('delRemarks').value,
+  });
+  document.getElementById('dcSlipPreview').style.display='block';
+}
+// Single source of truth for the Delivery Challan layout — used by the preview,
+// the saved-DC viewer, and print, so all three look identical.
+function dcSlipMarkup(d){
+  const pieces=d.piecesData||[];
+  const totalMetres=d.grandTotalMetres!=null?d.grandTotalMetres:pieces.reduce((s,p)=>s+(p.metres||0),0);
+  const totalWeight=d.totalWeight!=null?d.totalWeight:pieces.reduce((s,p)=>s+(p.weight||0),0);
+  const noPieces=d.noPieces!=null?d.noPieces:pieces.length;
+  return `
     <div class="dc-header">
       <div class="dc-logo-section">
         <img class="dc-logo-img" src="pa_fabs_logo.jpg" alt="PA FABS" onerror="this.style.display='none'" />
@@ -2896,30 +2942,29 @@ function previewDCSlip() {
       </div>
       <div class="dc-slip-title">
         <h3>DELIVERY CHALLAN</h3>
-        <p>DC No: <strong>${dcNum}</strong></p>
-        <p>Date: ${document.getElementById('delDate').value||todayISO()}</p>
+        <p>DC No: <strong>${d.dcNumber||'—'}</strong></p>
+        <p>Date: ${(d.deliveryDate||'').slice(0,10)||todayISO()}</p>
       </div>
     </div>
     <div class="dc-meta">
-      <div class="dc-meta-item"><span class="dc-meta-label">To M/S:</span>${document.getElementById('delCustomer').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">PO/Design No:</span>${document.getElementById('delDesignNo').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">Description:</span>${document.getElementById('delDescription').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">Reed &amp; Pick:</span>${document.getElementById('delReedPick').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">Vehicle No:</span>${document.getElementById('delVehicle').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">Driver:</span>${document.getElementById('delDriver').value||'—'}</div>
-      <div class="dc-meta-item"><span class="dc-meta-label">Receiver:</span>${document.getElementById('delReceiver').value||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">To M/S:</span>${d.customerName||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">PO/Design No:</span>${d.designNo||d.poNumber||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">Description:</span>${d.description||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">Reed &amp; Pick:</span>${d.reedPick||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">Vehicle No:</span>${d.vehicleNumber||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">Driver:</span>${d.driverName||'—'}</div>
+      <div class="dc-meta-item"><span class="dc-meta-label">Receiver:</span>${d.receiverName||'—'}</div>
     </div>
     <table class="dc-piece-table">
       <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-      <tbody>${piecesData.map(p=>`<tr><td>${p.pieceNo||"—"}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
+      <tbody>${pieces.map(p=>`<tr><td>${p.pieceNo||"—"}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;">No pieces entered</td></tr>'}</tbody>
       <tfoot><tr style="font-weight:700;border-top:2px solid black;"><td>Total: ${noPieces} pcs</td><td>${totalMetres} m</td><td>${Math.round(totalWeight*100)/100} kg</td></tr></tfoot>
     </table>
-    ${document.getElementById('delRemarks').value?`<div style="margin-top:.75rem;"><span style="font-weight:700;">Remarks:</span> ${document.getElementById('delRemarks').value}</div>`:''}
+    ${d.remarks?`<div style="margin-top:.75rem;"><span style="font-weight:700;">Remarks:</span> ${d.remarks}</div>`:''}
     <div class="dc-footer">
       <div><div class="dc-sig-line">Prepared By</div></div>
       <div><div class="dc-sig-line">Received By (Customer Signature)</div></div>
     </div>`;
-  document.getElementById('dcSlipPreview').style.display='block';
 }
 function clearDeliveryForm() {
   ['delPO','delCustomer','delVehicle','delDriver','delReceiver','delRemarks','delDesignNo','delReedPick','delNoPieces','delGrandTotal','delDescription'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
@@ -2945,33 +2990,9 @@ function renderDeliveryTable() {
 function showDCSlip(id) {
   const d=DB.deliveries.find(x=>x.id===id);
   if(!d) return;
-  const html=`<div class="detail-section">
-    <div class="detail-section-title">Delivery Challan — ${d.dcNumber}</div>
-    <div class="detail-grid">
-      <div class="detail-item"><label>DC Number</label><div class="dval">${d.dcNumber}</div></div>
-      <div class="detail-item"><label>Date</label><div class="dval">${d.deliveryDate}</div></div>
-      <div class="detail-item"><label>PO Number</label><div class="dval">${d.poNumber}</div></div>
-      <div class="detail-item"><label>Description</label><div class="dval">${d.description||'—'}</div></div>
-      <div class="detail-item"><label>Cycle</label><div class="dval">Cycle ${d.cycleNumber}</div></div>
-      <div class="detail-item"><label>Customer</label><div class="dval">${d.customerName}</div></div>
-      <div class="detail-item"><label>Reed×Pick</label><div class="dval">${d.reedPick||'—'}</div></div>
-      <div class="detail-item"><label>Total Pieces</label><div class="dval">${d.noPieces}</div></div>
-      <div class="detail-item"><label>Total Metres</label><div class="dval" style="color:var(--brand);font-size:18px;">${nz(d.grandTotalMetres,' m')}</div></div>
-      <div class="detail-item"><label>Total Weight</label><div class="dval">${d.totalWeight!=null?d.totalWeight+' kg':'—'}</div></div>
-      <div class="detail-item"><label>Vehicle</label><div class="dval">${d.vehicleNumber||'—'}</div></div>
-      <div class="detail-item"><label>Driver</label><div class="dval">${d.driverName||'—'}</div></div>
-    </div>
-    <div style="margin-top:1rem;"><div class="detail-section-title">Piece Table</div>
-      <table class="data-table">
-        <thead><tr><th>No.</th><th>Metres</th><th>Weight (kg)</th></tr></thead>
-        <tbody>${(d.piecesData||[]).map(p=>`<tr><td>${p.pieceNo||"—"}</td><td>${nz(p.metres,' m')}</td><td>${p.weight||0} kg</td></tr>`).join('')}</tbody>
-        <tfoot><tr style="font-weight:700;"><td>Total: ${d.noPieces} pcs</td><td>${nz(d.grandTotalMetres,' m')}</td><td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td></tr></tfoot>
-      </table>
-    </div>
-    ${d.remarks?`<div style="margin-top:1rem;"><strong>Remarks:</strong> ${d.remarks}</div>`:''}
-  </div>`;
-  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')">🖨 Print this DC</button></div><div id="dcSlipPanelContent">${html}</div>`;
-  openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+d.deliveryDate, wrapped);
+  // Same DC-slip layout as the preview, so the on-screen view AND the print match.
+  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')">🖨 Print this DC</button></div><div id="dcSlipPanelContent" class="dc-slip">${dcSlipMarkup(d)}</div>`;
+  openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+(d.deliveryDate||'').slice(0,10), wrapped);
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -3244,11 +3265,27 @@ function renderUserMgmt() {
     <td>${u.department||'—'}</td><td>${u.role||'—'}</td>
     <td>${u.status==='approved'?badge('green','Approved'):u.status==='pending'?badge('amber','Pending'):badge('red','Rejected')}</td>
     <td>${u.createdAt||'—'}</td>
-    <td style="display:flex;gap:.4rem;">
-      ${u.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveUser(${i})">Approve</button><button class="btn btn-sm" style="border-color:var(--brand);color:var(--brand);" onclick="rejectUser(${i})">Reject</button>`:'<span style="font-size:12px;color:var(--text2);">—</span>'}
+    <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+      ${u.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveUser(${i})">Approve</button><button class="btn btn-sm" style="border-color:var(--brand);color:var(--brand);" onclick="rejectUser(${i})">Reject</button>`:''}
+      <button class="btn btn-sm" onclick="resetUserPassword(${i})" title="Reset password">🔑</button>
+      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="deleteUserAction(${i})" title="Delete user">🗑</button>
     </td>
   </tr>`).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No users</p></div></td></tr>';
   paginateTable('adminUserBody');
+}
+async function deleteUserAction(idx){
+  const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
+  if(!confirm(`Delete user "${u.fullName||u.username}"? This cannot be undone.`)) return;
+  try{ await fetchAPI(`/users/${u.id}`,{method:'DELETE'}); DB.users=await fetchAPI('/users'); renderUserMgmt(); showToast('User deleted'); }
+  catch(e){ showToast('Delete failed: '+e.message); }
+}
+async function resetUserPassword(idx){
+  const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
+  const pw=prompt(`New password for "${u.fullName||u.username}" (min 8 chars):`);
+  if(pw===null) return;
+  if(pw.length<8){showToast('Password must be at least 8 characters');return;}
+  try{ await fetchAPI(`/users/${u.id}/password`,{method:'PATCH',body:JSON.stringify({newPassword:pw})}); showToast('Password reset'); }
+  catch(e){ showToast('Reset failed: '+e.message); }
 }
 async function approveUser(idx){
   const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
