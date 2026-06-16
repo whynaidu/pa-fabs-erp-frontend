@@ -1493,10 +1493,10 @@ input, select, textarea, button { font-family: inherit; }
       <div class="page-header">
         <div class="page-header-left">
           <h1 class="page-title">Delivery Entry &amp; DC Slip</h1>
-          <p class="page-sub">One delivery per PO per Cycle · Auto-built from Inventory Inward records · DC auto-generated</p>
+          <p class="page-sub">Deliver available fabric in batches · DC auto-generated · Loom frees only when the full order quantity is produced</p>
         </div>
       </div>
-      <div class="brand-box">⚠️ <strong>Delivery Rule:</strong> Delivery is allowed once fabric has been manufactured for this PO+Cycle. Enter pieces (No / Metres / Weight). On save, looms used for this PO+Cycle are freed.</div>
+      <div class="brand-box">⚠️ <strong>Delivery Rule:</strong> Deliver manufactured fabric in multiple batches over time. The loom stays assigned to the PO until the <strong>entire ordered quantity is produced</strong> — only the final delivery (once production is complete) frees the loom.</div>
       <div class="form-card" style="border:2px solid var(--brand);">
         <div class="form-section-title" style="color:var(--brand);">📋 Delivery Header</div>
         <div class="form-grid">
@@ -1550,7 +1550,7 @@ input, select, textarea, button { font-family: inherit; }
       <div class="form-card">
         <div class="form-actions">
           <button class="btn btn-outline-brand" onclick="previewDCSlip()">👁 Preview DC Slip</button>
-          <button class="btn btn-primary" onclick="saveDelivery()">💾 Save Delivery &amp; Free Looms</button>
+          <button class="btn btn-primary" onclick="saveDelivery()">💾 Save Delivery</button>
         </div>
       </div>
 
