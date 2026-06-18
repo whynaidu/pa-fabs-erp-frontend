@@ -639,6 +639,9 @@ input, select, textarea, button { font-family: inherit; }
   .dc-slip { border: 2px solid black; }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -849,6 +852,26 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="stats-grid" id="adminStats"></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Production — metres woven / day (last 14 days)</div>
+          <canvas id="chartProduction" height="120"></canvas>
+        </div>
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">PO Status</div>
+          <canvas id="chartPOStatus" height="200"></canvas>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.25rem;margin-bottom:1.5rem;">
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Loom Utilisation</div>
+          <canvas id="chartLooms" height="200"></canvas>
+        </div>
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Deliveries — metres / day (last 14 days)</div>
+          <canvas id="chartDeliveries" height="120"></canvas>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
         <div class="table-card">
           <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Loom Status Summary</span></div>
@@ -1122,6 +1145,16 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="stats-grid" id="userStats"></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">My Production — metres / day (last 14 days)</div>
+          <canvas id="uChartProduction" height="120"></canvas>
+        </div>
+        <div class="table-card" style="padding:1rem 1.25rem;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">My PO Status</div>
+          <canvas id="uChartPOStatus" height="200"></canvas>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
         <div class="table-card">
           <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Quick Loom Status</span></div>
@@ -1564,6 +1597,7 @@ input, select, textarea, button { font-family: inherit; }
           <div style="font-size:15px;font-weight:700;">DC Slip Preview</div>
           <div style="display:flex;gap:.5rem;">
             <button class="btn btn-sm" onclick="printDCNode('dcSlipContent')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print DC</button>
+            <button class="btn btn-sm" onclick="downloadDCPDF('dcSlipContent','DC-'+(document.getElementById('delPO').value||'preview'))"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Download PDF</button>
             <button class="btn btn-sm" onclick="document.getElementById('dcSlipPreview').style.display='none'">✕ Close</button>
           </div>
         </div>
@@ -3002,7 +3036,7 @@ function showDCSlip(id) {
   const d=DB.deliveries.find(x=>x.id===id);
   if(!d) return;
   // Same DC-slip layout as the preview, so the on-screen view AND the print match.
-  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print this DC</button></div><div id="dcSlipPanelContent" class="dc-slip">${dcSlipMarkup(d)}</div>`;
+  const wrapped=`<div style="display:flex;gap:.4rem;justify-content:flex-end;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print</button><button class="btn btn-sm btn-primary" onclick="downloadDCPDF('dcSlipPanelContent','${d.dcNumber}')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Download PDF</button></div><div id="dcSlipPanelContent" class="dc-slip">${dcSlipMarkup(d)}</div>`;
   openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+(d.deliveryDate||'').slice(0,10), wrapped);
 }
 
@@ -3013,6 +3047,69 @@ function renderUserTables() {
   renderPOTable(); renderInwardTable(); renderOutwardTable(); renderReturnTable();
   renderLoomAllocTable(); renderMfgTable(); renderDeliveryTable();
   ['myPOBody','myInwardBody','myOutwardBody','myReturnBody','myLoomAllocBody','myMfgBody','myDeliveryBody'].forEach(id=>paginateTable(id));
+}
+
+// ════════════════════════════════════════════════════════════════
+// DASHBOARD CHARTS (Chart.js)
+// ════════════════════════════════════════════════════════════════
+const _charts = {};
+function makeChart(id, config){
+  if(typeof Chart==='undefined') return;
+  const el=document.getElementById(id); if(!el) return;
+  if(_charts[id]){ _charts[id].destroy(); }
+  _charts[id]=new Chart(el, config);
+}
+function lastNDays(n){
+  const out=[]; const t=new Date();
+  for(let i=n-1;i>=0;i--){ const d=new Date(t); d.setDate(d.getDate()-i); out.push(d.toISOString().slice(0,10)); }
+  return out;
+}
+function sumByDay(records, dateField, valField, days){
+  const m={}; days.forEach(d=>m[d]=0);
+  (records||[]).forEach(r=>{ const d=(r[dateField]||'').slice(0,10); if(d in m) m[d]+=(parseFloat(r[valField])||0); });
+  return days.map(d=>Math.round(m[d]*100)/100);
+}
+function poStatusCounts(pos){
+  const c={pending:0,in_progress:0,complete:0};
+  (pos||[]).forEach(p=>{ if(c[p.status]!=null) c[p.status]++; });
+  return [c.pending,c.in_progress,c.complete];
+}
+function renderDashboardCharts(scope){
+  if(typeof Chart==='undefined') return;   // CDN still loading
+  const days=lastNDays(14), labels=days.map(d=>d.slice(5));
+  const RED='#C8102E', AMBER='#f59e0b', GREEN='#10b981', BLUE='#2563eb', GRAY='#9ca3af';
+  const lineOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}};
+  const pie=(legend)=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}}});
+  if(scope==='admin'){
+    makeChart('chartProduction',{type:'line',data:{labels,datasets:[{label:'Metres',data:sumByDay(DB.mfgs,'logDate','metresToday',days),borderColor:RED,backgroundColor:'rgba(200,16,46,.10)',fill:true,tension:.3,pointRadius:2}]},options:lineOpts});
+    makeChart('chartPOStatus',{type:'doughnut',data:{labels:['Pending','In Progress','Complete'],datasets:[{data:poStatusCounts(DB.pos),backgroundColor:[GRAY,AMBER,GREEN]}]},options:pie()});
+    const free=DB.looms.filter(l=>l.status==='free').length, occ=DB.looms.filter(l=>l.status==='occupied').length;
+    makeChart('chartLooms',{type:'doughnut',data:{labels:['Free','Occupied'],datasets:[{data:[free,occ],backgroundColor:[GREEN,RED]}]},options:pie()});
+    makeChart('chartDeliveries',{type:'bar',data:{labels,datasets:[{label:'Metres',data:sumByDay(DB.deliveries,'deliveryDate','grandTotalMetres',days),backgroundColor:BLUE}]},options:lineOpts});
+  } else {
+    makeChart('uChartProduction',{type:'line',data:{labels,datasets:[{label:'Metres',data:sumByDay(DB.mfgs,'logDate','metresToday',days),borderColor:RED,backgroundColor:'rgba(200,16,46,.10)',fill:true,tension:.3,pointRadius:2}]},options:lineOpts});
+    makeChart('uChartPOStatus',{type:'doughnut',data:{labels:['Pending','In Progress','Complete'],datasets:[{data:poStatusCounts(DB.pos),backgroundColor:[GRAY,AMBER,GREEN]}]},options:pie()});
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// PDF EXPORT — Delivery Challan
+// ════════════════════════════════════════════════════════════════
+async function downloadDCPDF(elementId, dcNumber){
+  const el=document.getElementById(elementId);
+  if(!el){ showToast('Nothing to export'); return; }
+  if(typeof html2canvas==='undefined' || !window.jspdf){ showToast('PDF library still loading — try again'); return; }
+  try{
+    showToast('Generating PDF…');
+    const canvas=await html2canvas(el,{scale:2,backgroundColor:'#ffffff'});
+    const img=canvas.toDataURL('image/png');
+    const { jsPDF }=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pw=pdf.internal.pageSize.getWidth(), margin=10, iw=pw-margin*2;
+    const ih=canvas.height*iw/canvas.width;
+    pdf.addImage(img,'PNG',margin,margin,iw,ih);
+    pdf.save((dcNumber||'delivery-challan')+'.pdf');
+  }catch(e){ showToast('PDF failed: '+e.message); }
 }
 
 function renderUserDashboard() {
@@ -3105,6 +3202,7 @@ function renderUserDashboard() {
       <span style="font-size:12px;">${a.label}</span>
     </button>
   `).join('');
+  renderDashboardCharts('user');
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -3168,6 +3266,7 @@ function renderAdminDashboard() {
       </div>
     </td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
+  renderDashboardCharts('admin');
 }
 
 function renderAllPOs() {
