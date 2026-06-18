@@ -2722,7 +2722,7 @@ function renderLoomAllocTable() {
     <td style="font-family:monospace;">${a.beamId}</td><td>Loom <strong>${a.loomNumber}</strong></td>
     <td>${a.weftRows?a.weftRows.map(w=>`${w.count}${w.colour?':'+w.colour:''}`).join(', '):'—'}</td>
     <td>${badge(a.status==='active'?'blue':a.status==='completed'?'green':'amber',a.status)}</td>
-    <td>${fmtDate(a.allocationDate)}</td><td>${a.expectedDone||'—'}</td>
+    <td>${fmtDate(a.allocationDate)}</td><td>${fmtDate(a.expectedDone)}</td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No loom allocations yet</p></div></td></tr>';
 }
 
