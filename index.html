@@ -1036,7 +1036,7 @@ input, select, textarea, button { font-family: inherit; }
       <div class="page-header">
         <div class="page-header-left">
           <h1 class="page-title">Delivery &amp; DC Records</h1>
-          <p class="page-sub">All deliveries · DC slips · One per PO per cycle</p>
+          <p class="page-sub">All deliveries · DC slips · Multiple batches per PO supported</p>
         </div>
         <div class="page-header-actions">
           <button class="btn btn-sm" onclick="exportCSV('deliveries')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
@@ -2022,6 +2022,13 @@ function userNav(page, btn) {
 // ════════════════════════════════════════════════════════════════
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function badge(cls, txt) { return `<span class="badge badge-${cls}">${txt}</span>`; }
+// Readable date — turns ISO "2026-06-18T00:00:00Z" into "18 Jun 2026".
+function fmtDate(v){
+  if(!v) return '—';
+  const d=new Date(v);
+  if(isNaN(d.getTime())) return String(v).slice(0,10);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
 // Null-safe value for table cells: blank/null/undefined/NaN → "—", else value (+ optional unit).
 function nz(v, suf){ return (v===null||v===undefined||v===''||(typeof v==='number'&&isNaN(v)))?'—':v+(suf||''); }
 
@@ -2115,7 +2122,7 @@ function renderAdminLoomTable() {
     <td>${l.currentCycle||'—'}</td>
     <td>${l.currentBeam||'—'}</td>
     <td>${l.allocatedBy||'—'}</td>
-    <td>${l.allocatedAt||'—'}</td>
+    <td>${fmtDate(l.allocatedAt)}</td>
   </tr>`).join('');
 }
 
@@ -2291,7 +2298,7 @@ function renderPOTable() {
     <td>${po.weftCount||'—'}</td>
     <td>${po.totalWarpQty!=null?po.totalWarpQty+' m':'—'}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
-    <td>${po.orderDate||'—'}</td>
+    <td>${fmtDate(po.orderDate)}</td>
   </tr>`).join('');
   paginateTable('myPOBody');
 }
@@ -2427,7 +2434,7 @@ function renderInwardTable() {
     <td>${rowsSummary(i.warpRows)}</td><td>${rowsSummary(i.weftRows)}</td>
     <td>${i.location||'—'}</td><td>${i.rmNumber||'—'}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
-    <td>${i.entryDate||'—'}</td>
+    <td>${fmtDate(i.entryDate)}</td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No inward entries yet</p></div></td></tr>';
 }
 
@@ -2509,7 +2516,7 @@ function renderOutwardTable() {
     <td>${o.operatorName||"—"}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
     <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
-    <td>${o.outwardDate||'—'}</td>
+    <td>${fmtDate(o.outwardDate)}</td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No outward entries yet</p></div></td></tr>';
 }
 
@@ -2643,7 +2650,7 @@ function renderReturnTable() {
     <td style="font-family:monospace;font-size:12px;">${r.beamIds&&r.beamIds.length?r.beamIds.join(', '):(r.beamsReturned?r.beamsReturned+' beams':'—')}</td><td>${r.warpMetres||'—'} m</td>
     <td>${r.weftRows?r.weftRows.map(w=>`${w.count}${w.colour?':'+w.colour:''}`).join(', '):'—'}</td>
     <td>${r.operatorName||'—'}</td><td>${r.receiverName||'—'}</td>
-    <td>${r.returnDate||'—'}</td>
+    <td>${fmtDate(r.returnDate)}</td>
   </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No return entries yet</p></div></td></tr>';
 }
 
@@ -2715,7 +2722,7 @@ function renderLoomAllocTable() {
     <td style="font-family:monospace;">${a.beamId}</td><td>Loom <strong>${a.loomNumber}</strong></td>
     <td>${a.weftRows?a.weftRows.map(w=>`${w.count}${w.colour?':'+w.colour:''}`).join(', '):'—'}</td>
     <td>${badge(a.status==='active'?'blue':a.status==='completed'?'green':'amber',a.status)}</td>
-    <td>${a.allocationDate||'—'}</td><td>${a.expectedDone||'—'}</td>
+    <td>${fmtDate(a.allocationDate)}</td><td>${a.expectedDone||'—'}</td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No loom allocations yet</p></div></td></tr>';
 }
 
@@ -2786,7 +2793,7 @@ function renderMfgTable() {
     <td>Loom <strong>${m.loomNumber}</strong></td><td style="font-family:monospace;">${m.beamId||'—'}</td>
     <td>${nz(m.metresToday,' m')}</td><td>${nz(m.totalManufactured,' m')}</td><td>${nz(m.balanceQty,' m')}</td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
-    <td>${m.logDate||'—'}</td>
+    <td>${fmtDate(m.logDate)}</td>
   </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No manufacturing log yet</p></div></td></tr>';
 }
 
@@ -3061,7 +3068,7 @@ function renderDeliveryTable() {
     <td>${nz(d.noPieces)}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
-    <td>${d.deliveryDate||'—'}</td>
+    <td>${fmtDate(d.deliveryDate)}</td>
     <td><button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button></td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
 }
@@ -3296,7 +3303,7 @@ function renderAdminDashboard() {
     <td>${nz(po.orderQty,' m')}</td>
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
-    <td>${po.orderDate||'—'}</td>
+    <td>${fmtDate(po.orderDate)}</td>
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -3318,7 +3325,7 @@ function renderAllPOs() {
     <td>₹${po.costPerMeter||0}/m</td>
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
-    <td>${po.orderDate||'—'}</td>
+    <td>${fmtDate(po.orderDate)}</td>
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -3339,7 +3346,7 @@ function renderAdminWarehouse() {
     <td>${i.location||'—'}</td>
     <td>${i.rmNumber||'—'}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
-    <td>${i.entryDate||'—'}</td>
+    <td>${fmtDate(i.entryDate)}</td>
     <td>${adminActions('inward',i.id)}</td>
   </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
@@ -3347,7 +3354,7 @@ function renderAdminWarehouse() {
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
     <td>${o.operatorName||"—"}</td><td>${o.warpCount||'—'}</td><td>${nz(o.warpMetres,' m')}</td>
     <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
-    <td>${o.outwardDate||'—'}</td><td>${o.expectedReturn||'—'}</td>
+    <td>${fmtDate(o.outwardDate)}</td><td>${fmtDate(o.expectedReturn)}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${adminActions('outward',o.id)}</td>
   </tr>`).join('') || '<tr><td colspan="14"><div class="empty-state"><p>No outward entries</p></div></td></tr>';
@@ -3357,7 +3364,7 @@ function renderAdminWarehouse() {
     <td style="font-family:monospace;font-size:12px;">${r.beamIds&&r.beamIds.length?r.beamIds.join(', '):(r.beamsReturned?r.beamsReturned+' beams':'—')}</td><td>${r.warpMetres||'—'} m</td>
     <td>${r.returnCones||'—'}</td>
     <td>${r.operatorName||'—'}</td><td>${r.receiverName||'—'}</td>
-    <td>${r.returnDate||'—'}</td>
+    <td>${fmtDate(r.returnDate)}</td>
     <td>${adminActions('return',r.id)}</td>
   </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No return entries</p></div></td></tr>';
   ['adminInwardBody','adminOutwardBody','adminReturnBody'].forEach(id=>paginateTable(id));
@@ -3385,7 +3392,7 @@ function renderAdminMfg() {
     <td>${nz(m.balanceQty,' m')}</td>
     <td><div class="progress" style="width:80px;display:inline-block;"><div class="progress-bar" style="width:${Math.min(100,Math.round(m.totalManufactured/((DB.pos.find(p=>p.poNumber===m.poNumber)||{}).orderQty||1)*100))}%"></div></div></td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
-    <td>${m.logDate||'—'}</td>
+    <td>${fmtDate(m.logDate)}</td>
     <td>${adminActions('mfg',m.id)}</td>
   </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No manufacturing log</p></div></td></tr>';
   paginateTable('adminMfgBody');
@@ -3399,7 +3406,7 @@ function renderAdminDelivery() {
     <td>${nz(d.noPieces)}</td><td><strong>${nz(d.grandTotalMetres,' m')}</strong></td>
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
-    <td>${d.deliveryDate||'—'}</td>
+    <td>${fmtDate(d.deliveryDate)}</td>
     <td><div style="display:flex;gap:4px;">
       <button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button>
       <button class="btn btn-sm" onclick="adminEdit('delivery','${d.id}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
@@ -3414,7 +3421,7 @@ function renderUserMgmt() {
     <td>${u.fullName||'—'}</td><td>${u.username||'—'}</td><td>${u.email||'—'}</td>
     <td>${u.department||'—'}</td><td>${u.role||'—'}</td>
     <td>${u.status==='approved'?badge('green','Approved'):u.status==='pending'?badge('amber','Pending'):badge('red','Rejected')}</td>
-    <td>${u.createdAt||'—'}</td>
+    <td>${fmtDate(u.createdAt)}</td>
     <td><div style="display:flex;gap:4px;align-items:center;">
       ${u.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveUser(${i})" title="Approve"><svg class="lic" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button><button class="btn btn-sm" style="border-color:var(--brand);color:var(--brand);" onclick="rejectUser(${i})" title="Reject"><svg class="lic" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg></button>`:''}
       <button class="btn btn-sm" onclick="resetUserPassword(${i})" title="Reset password"><svg class="lic" viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg></button>
@@ -3477,8 +3484,8 @@ function showPODetail(poNum) {
       <div class="detail-item"><label>Width</label><div class="dval">${po.width||'—'}"</div></div>
       <div class="detail-item"><label>Order Qty</label><div class="dval">${nz(po.orderQty,' m')}</div></div>
       <div class="detail-item"><label>Cost/m</label><div class="dval">₹${po.costPerMeter||0}</div></div>
-      <div class="detail-item"><label>Order Date</label><div class="dval">${po.orderDate||'—'}</div></div>
-      <div class="detail-item"><label>Expected Date</label><div class="dval">${po.expectedDate||'—'}</div></div>
+      <div class="detail-item"><label>Order Date</label><div class="dval">${fmtDate(po.orderDate)}</div></div>
+      <div class="detail-item"><label>Expected Date</label><div class="dval">${fmtDate(po.expectedDate)}</div></div>
     </div>
     <div style="margin-top:1rem;"><div class="detail-section-title">Warp Yarn</div>${po.warpRows.map(w=>`<div style="display:flex;gap:.5rem;margin-bottom:.3rem;font-size:13px;"><span class="badge badge-red">${w.count}</span><span>${w.colour}</span><span style="color:var(--text2);">${w.qty_kg} kg · ${w.bundles} bundles</span></div>`).join('')||'<div style="font-size:13px;color:var(--text3);">—</div>'}</div>
     <div style="margin-top:1rem;"><div class="detail-section-title">Weft Yarn</div>${po.weftRows.map(w=>`<div style="display:flex;gap:.5rem;margin-bottom:.3rem;font-size:13px;"><span class="badge badge-green">${w.count}</span><span>${w.colour}</span><span style="color:var(--text2);">${w.qty_kg} kg · ${w.bundles} bundles</span></div>`).join('')||'<div style="font-size:13px;color:var(--text3);">—</div>'}</div>
