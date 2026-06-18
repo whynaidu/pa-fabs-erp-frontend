@@ -285,7 +285,9 @@ input, select, textarea, button { font-family: inherit; }
 .nav-item.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
 .nav-item.active .nav-icon { color: var(--brand); }
 .nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
-.nav-emoji { width: 20px; font-size: 16px; line-height: 1; text-align: center; flex-shrink: 0; }
+.nav-emoji { width: 20px; font-size: 17px; line-height: 0; text-align: center; flex-shrink: 0; display:inline-flex; align-items:center; justify-content:center; }
+/* Lucide-style line icons replace all emoji — scale with surrounding font-size */
+.lic { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .nav-badge {
   margin-left: auto; background: var(--brand); color: white;
   font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
@@ -630,8 +632,8 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <p class="login-heading">Sign in to your account</p>
         <div class="role-tabs">
-          <button class="role-tab active" onclick="selectRole('admin')">⚙ Admin</button>
-          <button class="role-tab" onclick="selectRole('user')">👤 Staff User</button>
+          <button class="role-tab active" onclick="selectRole('admin')"><svg class="lic" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Admin</button>
+          <button class="role-tab" onclick="selectRole('user')"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Staff User</button>
         </div>
         <div class="form-group">
           <label>Username</label>
@@ -723,7 +725,7 @@ input, select, textarea, button { font-family: inherit; }
       <div class="form-group"><label>Role</label>
         <select id="regRole"><option value="">Select role</option><option>Warehouse Operator</option><option>Production Supervisor</option><option>Quality Inspector</option><option>Driver</option></select>
       </div>
-      <div class="info-box">⏳ Your account will be <strong>pending approval</strong> until the Admin activates it.</div>
+      <div class="info-box"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Your account will be <strong>pending approval</strong> until the Admin activates it.</div>
       <div class="form-actions" style="margin-top:.5rem;">
         <button class="btn" onclick="prevRegisterStep(2)">← Back</button>
         <button class="register-btn" style="margin:0;flex:1;" onclick="completeRegistration()">Register Account ✓</button>
@@ -753,11 +755,11 @@ input, select, textarea, button { font-family: inherit; }
     <div class="nav-section">
       <div class="nav-section-label">Overview</div>
       <button class="nav-item active" onclick="adminNav('dashboard',this)">
-        <span class="nav-emoji">📊</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span>
         Dashboard
       </button>
       <button class="nav-item" onclick="adminNav('loomBoard',this)">
-        <span class="nav-emoji">🧵</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg></span>
         Loom Status Board
         <span class="nav-badge" id="adminFreeLoomsBadge">18</span>
       </button>
@@ -765,26 +767,26 @@ input, select, textarea, button { font-family: inherit; }
     <div class="nav-section">
       <div class="nav-section-label">Modules</div>
       <button class="nav-item" onclick="adminNav('allPOs',this)">
-        <span class="nav-emoji">📋</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
         All POs
       </button>
       <button class="nav-item" onclick="adminNav('warehouseView',this)">
-        <span class="nav-emoji">📦</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
         Warehouse
       </button>
       <button class="nav-item" onclick="adminNav('manufacturingView',this)">
-        <span class="nav-emoji">🏭</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span>
         Manufacturing
       </button>
       <button class="nav-item" onclick="adminNav('deliveryView',this)">
-        <span class="nav-emoji">🚚</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span>
         Delivery &amp; DC
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Administration</div>
       <button class="nav-item" onclick="adminNav('userMgmt',this)">
-        <span class="nav-emoji">👥</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         User Management
       </button>
     </div>
@@ -809,18 +811,18 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">PA FABS Textile ERP · Production · Procurement · Warehouse · Manufacturing · Delivery</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="generateReport()">📊 Export Report</button>
-          <button class="btn btn-sm btn-primary" onclick="renderAdminDashboard()">↻ Refresh</button>
+          <button class="btn btn-sm" onclick="generateReport()"><svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg> Export Report</button>
+          <button class="btn btn-sm btn-primary" onclick="renderAdminDashboard()"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Refresh</button>
         </div>
       </div>
       <div class="stats-grid" id="adminStats"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
         <div class="table-card">
-          <div class="table-toolbar"><span class="table-toolbar-title">🏭 Loom Status Summary</span></div>
+          <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Loom Status Summary</span></div>
           <div style="padding:1rem 1.25rem;" id="adminLoomSummary"></div>
         </div>
         <div class="table-card">
-          <div class="table-toolbar"><span class="table-toolbar-title">📋 Active PO Cycles</span></div>
+          <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Active PO Cycles</span></div>
           <table class="data-table" id="adminActiveCycleTable">
             <thead><tr><th>PO No.</th><th>Cycle</th><th>Status</th><th>Progress</th></tr></thead>
             <tbody id="adminActiveCycleBody"></tbody>
@@ -829,9 +831,9 @@ input, select, textarea, button { font-family: inherit; }
       </div>
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">📦 All Purchase Orders</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> All Purchase Orders</span>
           <input class="search-input" type="text" placeholder="Search PO..." oninput="filterTable(this.value,'adminDashPOTable')">
-          <button class="btn btn-sm" onclick="exportCSV('pos')">📥 CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('pos')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
         </div>
         <table class="data-table" id="adminDashPOTable">
           <thead><tr><th>PO Number</th><th>Design / Description</th><th>Customer</th><th>Reed×Pick</th><th>Order Qty</th><th>Cycles</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
@@ -848,10 +850,10 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">Live status of all 18 looms · Global lock until delivery complete</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="exportCSV('looms')">📥 Export</button>
+          <button class="btn btn-sm" onclick="exportCSV('looms')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Export</button>
         </div>
       </div>
-      <div class="brand-box">🔒 <strong>Global Loom Lock Rule:</strong> A loom stays OCCUPIED until the Delivery entry for its PO+Cycle is saved. Only FREE looms appear in Allocation dropdowns for all users.</div>
+      <div class="brand-box"><svg class="lic" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <strong>Global Loom Lock Rule:</strong> A loom stays OCCUPIED until the Delivery entry for its PO+Cycle is saved. Only FREE looms appear in Allocation dropdowns for all users.</div>
       <div style="display:flex;gap:1rem;margin-bottom:1rem;">
         <span style="display:flex;align-items:center;gap:6px;font-size:13px;"><span style="width:12px;height:12px;border-radius:50%;background:var(--green);display:inline-block;"></span> Free</span>
         <span style="display:flex;align-items:center;gap:6px;font-size:13px;"><span style="width:12px;height:12px;border-radius:50%;background:var(--brand);display:inline-block;"></span> Occupied</span>
@@ -875,7 +877,7 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">Full list · Admin can view all POs and cycle timelines</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="exportCSV('pos')">📥 CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('pos')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
         </div>
       </div>
       <div class="table-card">
@@ -904,14 +906,14 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">All Inward · Outward · Return entries across all POs and cycles</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="exportCSV('inwards')">📥 Inward CSV</button>
-          <button class="btn btn-sm" onclick="exportCSV('outwards')">📥 Outward CSV</button>
-          <button class="btn btn-sm" onclick="exportCSV('returns')">📥 Return CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('inwards')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Inward CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('outwards')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Outward CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('returns')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Return CSV</button>
         </div>
       </div>
       <div class="table-card" style="margin-bottom:1.25rem">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">📥 Inward Entries</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Inward Entries</span>
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminInwardTable')">
         </div>
         <table class="data-table" id="adminInwardTable">
@@ -921,7 +923,7 @@ input, select, textarea, button { font-family: inherit; }
       </div>
       <div class="table-card" style="margin-bottom:1.25rem">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">📤 Outward Entries</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> Outward Entries</span>
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminOutwardTable')">
         </div>
         <table class="data-table" id="adminOutwardTable">
@@ -931,7 +933,7 @@ input, select, textarea, button { font-family: inherit; }
       </div>
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">🔄 Return Entries</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Return Entries</span>
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminReturnTable')">
         </div>
         <table class="data-table" id="adminReturnTable">
@@ -949,13 +951,13 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">All looms progress · Daily metres log · Balance tracking</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="exportCSV('mfgs')">📥 CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('mfgs')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
         </div>
       </div>
       <div class="stats-grid" id="adminMfgStats"></div>
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">🏭 Manufacturing Log — All Looms</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Manufacturing Log — All Looms</span>
           <input class="search-input" type="text" placeholder="Search PO..." oninput="filterTable(this.value,'adminMfgTable')">
         </div>
         <table class="data-table" id="adminMfgTable">
@@ -973,12 +975,12 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">All deliveries · DC slips · One per PO per cycle</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-sm" onclick="exportCSV('deliveries')">📥 CSV</button>
+          <button class="btn btn-sm" onclick="exportCSV('deliveries')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
         </div>
       </div>
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="table-toolbar-title">🚚 Delivery Entries</span>
+          <span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg> Delivery Entries</span>
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminDeliveryTable')">
         </div>
         <table class="data-table" id="adminDeliveryTable">
@@ -1025,41 +1027,41 @@ input, select, textarea, button { font-family: inherit; }
     <div class="nav-section">
       <div class="nav-section-label">Overview</div>
       <button class="nav-item active" onclick="userNav('dashboard',this)">
-        <span class="nav-emoji">📊</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span>
         Dashboard
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Order Management</div>
       <button class="nav-item" onclick="userNav('poDetails',this)">
-        <span class="nav-emoji">📋</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>
         PO Details
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Production Flow</div>
       <button class="nav-item" onclick="userNav('inward',this)">
-        <span class="nav-emoji">📥</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>
         Inward Entry
       </button>
       <button class="nav-item" onclick="userNav('outward',this)">
-        <span class="nav-emoji">📤</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
         Outward Entry
       </button>
       <button class="nav-item" onclick="userNav('returnEntry',this)">
-        <span class="nav-emoji">🔄</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>
         Return Entry
       </button>
       <button class="nav-item" onclick="userNav('loomAlloc',this)">
-        <span class="nav-emoji">🧵</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg></span>
         Loom Allocation
       </button>
       <button class="nav-item" onclick="userNav('manufacturing',this)">
-        <span class="nav-emoji">🏭</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span>
         Manufacturing
       </button>
       <button class="nav-item" onclick="userNav('delivery',this)">
-        <span class="nav-emoji">🚚</span>
+        <span class="nav-emoji"><svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span>
         Delivery &amp; DC
       </button>
     </div>
@@ -1087,16 +1089,16 @@ input, select, textarea, button { font-family: inherit; }
       <div class="stats-grid" id="userStats"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
         <div class="table-card">
-          <div class="table-toolbar"><span class="table-toolbar-title">🏭 Quick Loom Status</span></div>
+          <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Quick Loom Status</span></div>
           <div style="padding:1rem 1.25rem;" id="userLoomQuickSummary"></div>
         </div>
         <div class="table-card">
-          <div class="table-toolbar"><span class="table-toolbar-title">📋 Today's Tasks</span></div>
+          <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Today's Tasks</span></div>
           <div style="padding:1rem 1.25rem;" id="userTodayTasks"></div>
         </div>
       </div>
       <div class="table-card">
-        <div class="table-toolbar"><span class="table-toolbar-title">🚀 Quick Actions</span></div>
+        <div class="table-toolbar"><span class="table-toolbar-title"><svg class="lic" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> Quick Actions</span></div>
         <div style="padding:1rem 1.25rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;" id="userQuickActions"></div>
       </div>
     </div>
@@ -1110,7 +1112,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">📋 Basic Information</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Basic Information</div>
         <div class="form-grid">
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="poNumber" placeholder="e.g. PO-2024-001" /></div>
           <div class="form-group"><label>Description / Design Name</label><input type="text" id="poDescription" placeholder="Fabric design or description" /></div>
@@ -1122,7 +1124,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">⚙️ Specifications</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Specifications</div>
         <div class="form-grid cols4">
           <div class="form-group"><label>Reed</label><input type="text" id="poReed" placeholder="e.g. 52" /></div>
           <div class="form-group"><label>Reed — On Table / Loom</label><select id="poReedOn"><option value="">—</option><option value="table">On Table</option><option value="loom">On Loom</option></select></div>
@@ -1136,7 +1138,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">📅 Order Details</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Order Details</div>
         <div class="form-grid">
           <div class="form-group"><label>Purchase Order Quantity (metres) <span class="field-required">*</span></label><input type="number" id="poOrderQty" placeholder="0" oninput="computeTotalWarp()" /></div>
           <div class="form-group"><label>Shortage %</label><input type="number" id="poShortage" placeholder="e.g. 8" step="0.01" oninput="computeTotalWarp()" /></div>
@@ -1146,7 +1148,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <div class="form-actions">
           <button class="btn" onclick="clearPOForm()">Clear</button>
-          <button class="btn btn-primary" onclick="savePODetails()">💾 Save PO Details</button>
+          <button class="btn btn-primary" onclick="savePODetails()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save PO Details</button>
         </div>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
@@ -1169,9 +1171,9 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">Material receipt · First step of each production cycle · Cycle auto-assigned by system</p>
         </div>
       </div>
-      <div class="brand-box">🔄 <strong>Cycle Guard:</strong> If a previous cycle exists for this PO, it must have a completed Delivery before a new Inward can start. Cycle number is auto-incremented by the system.</div>
+      <div class="brand-box"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> <strong>Cycle Guard:</strong> If a previous cycle exists for this PO, it must have a completed Delivery before a new Inward can start. Cycle number is auto-incremented by the system.</div>
       <div class="form-card" style="border:2px solid var(--brand);">
-        <div class="form-section-title" style="color:var(--brand);">📋 PO Reference</div>
+        <div class="form-section-title" style="color:var(--brand);"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> PO Reference</div>
         <div class="form-grid">
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="inPO" placeholder="PO-2024-001" oninput="populateInwardFromPO()" /></div>
           <div class="form-group"><label>PO Description</label><div class="readonly-val" id="inPODesc">—</div></div>
@@ -1183,19 +1185,19 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg> Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
           <button type="button" class="btn btn-sm" style="float:right;" onclick="addInwardWarpRow()">+ Add Warp Row</button>
         </div>
         <div id="inwardWarpRowsContainer"></div>
       </div>
       <div class="form-card" style="border-left:3px solid var(--green);">
-        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— pre-filled from PO, editable</small>
           <button type="button" class="btn btn-sm" style="float:right;" onclick="addInwardWeftRow()">+ Add Weft Row</button>
         </div>
         <div id="inwardWeftRowsContainer"></div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">📦 Additional Details</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Additional Details</div>
         <div class="form-grid">
           <div class="form-group"><label>RM Number</label><input type="text" id="inRM" placeholder="e.g. RM-045" /></div>
           <div class="form-group"><label>Cone/Bag Count</label><input type="number" id="inConeBag" placeholder="0" /></div>
@@ -1208,7 +1210,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <div class="form-actions">
           <button class="btn" onclick="clearInwardForm()">Clear</button>
-          <button class="btn btn-primary" onclick="saveInward()">💾 Save Inward Entry</button>
+          <button class="btn btn-primary" onclick="saveInward()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Inward Entry</button>
         </div>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
@@ -1229,7 +1231,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">⚙️ Process &amp; PO Reference</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Process &amp; PO Reference</div>
         <div class="form-grid">
           <div class="form-group"><label>Process Type <span class="field-required">*</span></label>
             <select id="outwardProcess" onchange="handleOutwardProcessChange()">
@@ -1248,7 +1250,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div id="outwardWarpFields" class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg> Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="outwardWarpRowsContainer"></div>
         <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addOutwardWarpRow()">+ Add Warp Count &amp; Colour</button>
         <div class="form-grid" style="margin-top:1rem;">
@@ -1258,7 +1260,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div id="outwardWeftFields" class="form-card" style="border-left:3px solid var(--green);display:none;">
-        <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="outwardWeftRowsContainer"></div>
         <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addOutwardWeftRow()">+ Add Weft Count &amp; Colour</button>
         <div class="form-grid" style="margin-top:1rem;">
@@ -1272,7 +1274,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <div class="form-actions">
           <button class="btn" onclick="clearOutwardForm()">Clear</button>
-          <button class="btn btn-primary" onclick="saveOutward()">💾 Save Outward Entry</button>
+          <button class="btn btn-primary" onclick="saveOutward()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Outward Entry</button>
         </div>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
@@ -1293,7 +1295,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">🔄 Return Reference</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Return Reference</div>
         <div class="form-grid">
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="retPO" placeholder="PO-2024-001" oninput="populateReturnFromPO()" /></div>
           <div class="form-group"><label>PO Description</label><div class="readonly-val" id="retPODesc">—</div></div>
@@ -1308,20 +1310,20 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div id="retWarpFields" class="form-card" style="border-left:3px solid var(--brand);">
-        <div class="form-section-title">🧶 Warping Return Details <small style="font-weight:400;font-size:11px;color:var(--text2);">— Add up to 5 beam entries</small></div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg> Warping Return Details <small style="font-weight:400;font-size:11px;color:var(--text2);">— Add up to 5 beam entries</small></div>
         <div id="beamEntriesContainer"></div>
         <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addBeamEntry()">+ Add Beam Entry</button>
         <div style="font-size:11px;color:var(--text3);margin-top:0.5rem;text-align:center;" id="beamCountHint">0 / 5 beams added</div>
-        <div class="info-box" style="margin-top:1rem;">📌 Beam IDs will be auto-generated as B001, B002… (sequential per PO+Cycle) and linked to Loom Allocation.</div>
+        <div class="info-box" style="margin-top:1rem;"><svg class="lic" viewBox="0 0 24 24"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg> Beam IDs will be auto-generated as B001, B002… (sequential per PO+Cycle) and linked to Loom Allocation.</div>
       </div>
       <div id="retWeftFields" style="display:none;">
         <div class="form-card" style="border-left:3px solid var(--brand);">
-          <div class="form-section-title">🧶 Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+          <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg> Warp Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
           <div id="windingWarpRowsContainer"></div>
           <button class="btn btn-outline-brand" style="margin-top:.75rem;border-style:dashed;" onclick="addWindingWarpRow()">+ Add Warp Count &amp; Colour</button>
         </div>
         <div class="form-card" style="border-left:3px solid var(--green);">
-          <div class="form-section-title">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+          <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
           <div id="windingWeftRowsContainer"></div>
           <button class="btn" style="margin-top:.75rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addWindingWeftRow()">+ Add Weft Count &amp; Colour</button>
         </div>
@@ -1334,7 +1336,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <div class="form-actions">
           <button class="btn" onclick="clearReturnForm()">Clear</button>
-          <button class="btn btn-primary" onclick="saveReturn()">💾 Save Return Entry</button>
+          <button class="btn btn-primary" onclick="saveReturn()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Return Entry</button>
         </div>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
@@ -1354,9 +1356,9 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">Allocate warped beams to free looms · 18 looms total · Global lock active</p>
         </div>
       </div>
-      <div class="brand-box">🔒 <strong>Global Lock:</strong> Only FREE looms appear in the dropdown. A loom stays occupied until manufacturing is completed. Looms are freed immediately when manufacturing is marked as Done.</div>
+      <div class="brand-box"><svg class="lic" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <strong>Global Lock:</strong> Only FREE looms appear in the dropdown. A loom stays occupied until manufacturing is completed. Looms are freed immediately when manufacturing is marked as Done.</div>
       <div class="form-card">
-        <div class="form-section-title">🏭 Loom Allocation Form</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Loom Allocation Form</div>
         <div class="form-grid">
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="laPoNum" placeholder="PO-2024-001" oninput="populateLoomFromPO()" /></div>
           <div class="form-group"><label>PO Description</label><div class="readonly-val" id="laPODesc">—</div></div>
@@ -1370,12 +1372,12 @@ input, select, textarea, button { font-family: inherit; }
           <div class="form-group"><label>Allocation Date</label><input type="date" id="laDate" /></div>
           <div class="form-group"><label>Expected Done</label><input type="date" id="laExpDone" /></div>
         </div>
-        <div class="form-section-title" style="margin-top:1rem;">🪡 Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
+        <div class="form-section-title" style="margin-top:1rem;"><svg class="lic" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> Weft Rows <small style="font-weight:400;font-size:11px;color:var(--text2);">— dropdowns from inward yarn</small></div>
         <div id="loomWeftRowsContainer"></div>
         <button class="btn" style="margin-top:.5rem;border-style:dashed;color:var(--green);border-color:var(--green);" onclick="addLoomWeftRow()">+ Add Weft Count &amp; Colour</button>
         <div class="form-actions" style="margin-top:1.5rem;">
           <button class="btn" onclick="clearLoomForm()">Clear</button>
-          <button class="btn btn-primary" onclick="saveLoomAlloc()">💾 Allocate Loom</button>
+          <button class="btn btn-primary" onclick="saveLoomAlloc()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Allocate Loom</button>
         </div>
       </div>
       <div style="margin-top:1.25rem;">
@@ -1400,7 +1402,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card">
-        <div class="form-section-title">🏭 Daily Production Entry</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg> Daily Production Entry</div>
         <div class="form-grid">
           <div class="form-group"><label>Loom Number <span class="field-required">*</span></label>
             <select id="mfgLoomNum" onchange="loadMfgFromLoom()">
@@ -1441,7 +1443,7 @@ input, select, textarea, button { font-family: inherit; }
       </div>
       <div class="form-actions">
         <button class="btn" onclick="clearMfgForm()">Clear</button>
-        <button class="btn btn-primary" onclick="saveMfg()">💾 Save Manufacturing</button>
+        <button class="btn btn-primary" onclick="saveMfg()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Manufacturing</button>
       </div>
       <div class="table-card" style="margin-top:1.5rem;">
         <div class="table-toolbar"><span class="table-toolbar-title">Manufacturing Log</span></div>
@@ -1463,9 +1465,9 @@ input, select, textarea, button { font-family: inherit; }
           <p class="page-sub">Deliver available fabric in batches · DC auto-generated · Loom frees only when the full order quantity is produced</p>
         </div>
       </div>
-      <div class="brand-box">⚠️ <strong>Delivery Rule:</strong> Deliver manufactured fabric in multiple batches over time. The loom stays assigned to the PO until the <strong>entire ordered quantity is produced</strong> — only the final delivery (once production is complete) frees the loom.</div>
+      <div class="brand-box"><svg class="lic" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> <strong>Delivery Rule:</strong> Deliver manufactured fabric in multiple batches over time. The loom stays assigned to the PO until the <strong>entire ordered quantity is produced</strong> — only the final delivery (once production is complete) frees the loom.</div>
       <div class="form-card" style="border:2px solid var(--brand);">
-        <div class="form-section-title" style="color:var(--brand);">📋 Delivery Header</div>
+        <div class="form-section-title" style="color:var(--brand);"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Delivery Header</div>
         <div class="form-grid">
           <div class="form-group"><label>PO Number <span class="field-required">*</span></label><input type="text" id="delPO" placeholder="PO-2024-001" oninput="populateDeliveryFromPO()" /></div>
           <div class="form-group"><label>PO Description</label><div class="readonly-val" id="delPODesc">—</div></div>
@@ -1480,7 +1482,7 @@ input, select, textarea, button { font-family: inherit; }
         </div>
       </div>
       <div class="form-card" style="background:var(--surface2);border:1px solid var(--border);">
-        <div class="form-section-title">📦 Delivery Details (Manual Entry)</div>
+        <div class="form-section-title"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> Delivery Details (Manual Entry)</div>
         <div class="form-grid cols3" style="margin-bottom:1rem;">
           <div class="form-group"><label>PO / Design No.</label><input type="text" id="delDesignNo" placeholder="Enter design no." /></div>
           <div class="form-group"><label>Reed &amp; Pick</label><input type="text" id="delReedPick" placeholder="e.g. 52×30" /></div>
@@ -1516,8 +1518,8 @@ input, select, textarea, button { font-family: inherit; }
       </div>
       <div class="form-card">
         <div class="form-actions">
-          <button class="btn btn-outline-brand" onclick="previewDCSlip()">👁 Preview DC Slip</button>
-          <button class="btn btn-primary" onclick="saveDelivery()">💾 Save Delivery</button>
+          <button class="btn btn-outline-brand" onclick="previewDCSlip()"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> Preview DC Slip</button>
+          <button class="btn btn-primary" onclick="saveDelivery()"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Delivery</button>
         </div>
       </div>
 
@@ -1526,7 +1528,7 @@ input, select, textarea, button { font-family: inherit; }
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
           <div style="font-size:15px;font-weight:700;">DC Slip Preview</div>
           <div style="display:flex;gap:.5rem;">
-            <button class="btn btn-sm" onclick="printDCNode('dcSlipContent')">🖨 Print DC</button>
+            <button class="btn btn-sm" onclick="printDCNode('dcSlipContent')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print DC</button>
             <button class="btn btn-sm" onclick="document.getElementById('dcSlipPreview').style.display='none'">✕ Close</button>
           </div>
         </div>
@@ -2959,7 +2961,7 @@ function showDCSlip(id) {
   const d=DB.deliveries.find(x=>x.id===id);
   if(!d) return;
   // Same DC-slip layout as the preview, so the on-screen view AND the print match.
-  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')">🖨 Print this DC</button></div><div id="dcSlipPanelContent" class="dc-slip">${dcSlipMarkup(d)}</div>`;
+  const wrapped=`<div style="text-align:right;margin-bottom:.5rem;"><button class="btn btn-sm" onclick="printDCNode('dcSlipPanelContent')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print this DC</button></div><div id="dcSlipPanelContent" class="dc-slip">${dcSlipMarkup(d)}</div>`;
   openPanel('DC Slip — '+d.dcNumber, d.customerName+' · '+(d.deliveryDate||'').slice(0,10), wrapped);
 }
 
@@ -2974,10 +2976,10 @@ function renderUserTables() {
 
 function renderUserDashboard() {
   const stats=[
-    {icon:'📋',label:'My POs',val:DB.pos.length,sub:'Purchase orders created',cls:'blue'},
-    {icon:'🏭',label:'Free Looms',val:DB.looms.filter(l=>l.status==='free').length,sub:'Available for allocation',cls:'green'},
-    {icon:'📦',label:'Inward Entries',val:DB.inwards.length,sub:'Raw material received',cls:'amber'},
-    {icon:'🚚',label:'Deliveries Today',val:DB.deliveries.filter(d=>d.deliveryDate===todayISO()).length,sub:'Completed today',cls:'red'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',label:'My POs',val:DB.pos.length,sub:'Purchase orders created',cls:'blue'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',label:'Free Looms',val:DB.looms.filter(l=>l.status==='free').length,sub:'Available for allocation',cls:'green'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',label:'Inward Entries',val:DB.inwards.length,sub:'Raw material received',cls:'amber'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',label:'Deliveries Today',val:DB.deliveries.filter(d=>d.deliveryDate===todayISO()).length,sub:'Completed today',cls:'red'},
   ];
   document.getElementById('userStats').innerHTML=stats.map(s=>`
     <div class="stat-card">
@@ -3022,39 +3024,39 @@ function renderUserDashboard() {
   document.getElementById('userTodayTasks').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
       <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:var(--surface2);border-radius:6px;">
-        <span style="font-size:18px;">📥</span>
+        <span style="font-size:18px;"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>
         <div><div style="font-size:11px;color:var(--text2);">Inward Entries</div><div style="font-weight:700;">${todayInwards}</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:var(--surface2);border-radius:6px;">
-        <span style="font-size:18px;">📤</span>
+        <span style="font-size:18px;"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
         <div><div style="font-size:11px;color:var(--text2);">Outward Entries</div><div style="font-weight:700;">${todayOutwards}</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:var(--surface2);border-radius:6px;">
-        <span style="font-size:18px;">🔄</span>
+        <span style="font-size:18px;"><svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>
         <div><div style="font-size:11px;color:var(--text2);">Return Entries</div><div style="font-weight:700;">${todayReturns}</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:var(--surface2);border-radius:6px;">
-        <span style="font-size:18px;">🏭</span>
+        <span style="font-size:18px;"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span>
         <div><div style="font-size:11px;color:var(--text2);">Mfg Logs</div><div style="font-weight:700;">${todayMfg}</div></div>
       </div>
     </div>
     ${upcomingCompletions.length>0?`<div style="margin-top:0.75rem;padding:0.75rem;background:var(--amber-light);border:1px solid var(--amber);border-radius:6px;font-size:12px;">
-      ⚠️ <strong>Upcoming Completions (within 2 days):</strong><br>
+      <svg class="lic" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> <strong>Upcoming Completions (within 2 days):</strong><br>
       ${upcomingCompletions.map(c => {
         const daysUntil = Math.ceil((new Date(c.expectedDone) - today) / (1000 * 60 * 60 * 24));
         return `Loom ${c.loomNumber} (${c.poNumber}) - ${daysUntil===0?'Due Today':daysUntil===1?'Due Tomorrow':`${daysUntil} days left`}`;
       }).join('<br>')}
     </div>`:''}
     ${pendingDeliveries>0?`<div style="margin-top:0.75rem;padding:0.5rem;background:var(--warn-light);border:1px solid var(--warn);border-radius:6px;font-size:12px;">
-      ⚠️ ${pendingDeliveries} pending delivery(s) to complete
+      <svg class="lic" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> ${pendingDeliveries} pending delivery(s) to complete
     </div>`:''}`;
   const actions=[
-    {label:'New Inward Entry',icon:'📥',page:'inward'},
-    {label:'New Outward Entry',icon:'📤',page:'outward'},
-    {label:'Return Material',icon:'🔄',page:'returnEntry'},
-    {label:'Allocate Loom',icon:'🏭',page:'loomAlloc'},
-    {label:'Update Manufacturing',icon:'⚡',page:'manufacturing'},
-    {label:'Delivery & DC',icon:'🚚',page:'delivery'},
+    {label:'New Inward Entry',icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>',page:'inward'},
+    {label:'New Outward Entry',icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>',page:'outward'},
+    {label:'Return Material',icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>',page:'returnEntry'},
+    {label:'Allocate Loom',icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',page:'loomAlloc'},
+    {label:'Update Manufacturing',icon:'<svg class="lic" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',page:'manufacturing'},
+    {label:'Delivery & DC',icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',page:'delivery'},
   ];
   document.getElementById('userQuickActions').innerHTML=actions.map(a=>`
     <button class="btn" style="justify-content:center;padding:1rem;text-align:center;gap:0.5rem;cursor:pointer;" onclick="document.querySelectorAll('#userApp .nav-item')[${actions.indexOf(a)+2}].click()">
@@ -3069,10 +3071,10 @@ function renderUserDashboard() {
 // ════════════════════════════════════════════════════════════════
 function renderAdminDashboard() {
   const stats=[
-    {icon:'📋',label:'Total POs',val:DB.pos.length,sub:'All purchase orders',cls:'red'},
-    {icon:'🏭',label:'Active Looms',val:DB.looms.filter(l=>l.status==='occupied').length,sub:'of 18 looms',cls:'amber'},
-    {icon:'📦',label:'Inventory (m)',val:DB.inventory.reduce((s,v)=>s+v.fabricMetres,0).toFixed(0),sub:'Fabric in stock',cls:'green'},
-    {icon:'🚚',label:'Deliveries',val:DB.deliveries.length,sub:'Total DC slips',cls:'blue'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',label:'Total POs',val:DB.pos.length,sub:'All purchase orders',cls:'red'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',label:'Active Looms',val:DB.looms.filter(l=>l.status==='occupied').length,sub:'of 18 looms',cls:'amber'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',label:'Inventory (m)',val:DB.inventory.reduce((s,v)=>s+v.fabricMetres,0).toFixed(0),sub:'Fabric in stock',cls:'green'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',label:'Deliveries',val:DB.deliveries.length,sub:'Total DC slips',cls:'blue'},
   ];
   document.getElementById('adminStats').innerHTML=stats.map(s=>`
     <div class="stat-card">
@@ -3118,10 +3120,10 @@ function renderAdminDashboard() {
     <td>${po.orderDate||'—'}</td>
     <td>
       <div style="display:flex;gap:4px;">
-        <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
-        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit">✏️</button>
-        <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
-        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
+        <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
+        <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
       </div>
     </td>
   </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
@@ -3139,10 +3141,10 @@ function renderAllPOs() {
     <td>${po.orderDate||'—'}</td>
     <td>
       <div style="display:flex;gap:4px;">
-        <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details">👁</button>
-        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit">✏️</button>
-        <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV">📥</button>
-        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete">🗑</button>
+        <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="btn btn-sm" onclick="adminEdit('po','${po.poNumber}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
+        <button class="btn btn-sm" onclick="exportPOCSV('${po.poNumber}')" title="Download CSV"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+        <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
       </div>
     </td>
   </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
@@ -3183,10 +3185,10 @@ function renderAdminWarehouse() {
 
 function renderAdminMfg() {
   const stats=[
-    {icon:'📊',label:'Total Logs',val:DB.mfgs.length,cls:'blue'},
-    {icon:'🧵',label:'Total Metres',val:DB.mfgs.reduce((s,m)=>s+m.metresToday,0)+' m',cls:'green'},
-    {icon:'✅',label:'Done Looms',val:DB.mfgs.filter(m=>m.isDone).length,cls:'green'},
-    {icon:'⚙️',label:'Active Looms',val:DB.looms.filter(l=>l.status==='occupied').length,cls:'red'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>',label:'Total Logs',val:DB.mfgs.length,cls:'blue'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg>',label:'Total Metres',val:DB.mfgs.reduce((s,m)=>s+m.metresToday,0)+' m',cls:'green'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',label:'Done Looms',val:DB.mfgs.filter(m=>m.isDone).length,cls:'green'},
+    {icon:'<svg class="lic" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',label:'Active Looms',val:DB.looms.filter(l=>l.status==='occupied').length,cls:'red'},
   ];
   document.getElementById('adminMfgStats').innerHTML=stats.map(s=>`
     <div class="stat-card">
@@ -3220,8 +3222,8 @@ function renderAdminDelivery() {
     <td>${d.deliveryDate||'—'}</td>
     <td><div style="display:flex;gap:4px;">
       <button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button>
-      <button class="btn btn-sm" onclick="adminEdit('delivery','${d.id}')" title="Edit">✏️</button>
-      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('delivery','${d.id}')" title="Delete">🗑</button>
+      <button class="btn btn-sm" onclick="adminEdit('delivery','${d.id}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
+      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('delivery','${d.id}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
     </div></td>
   </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
   paginateTable('adminDeliveryBody');
@@ -3235,8 +3237,8 @@ function renderUserMgmt() {
     <td>${u.createdAt||'—'}</td>
     <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
       ${u.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveUser(${i})">Approve</button><button class="btn btn-sm" style="border-color:var(--brand);color:var(--brand);" onclick="rejectUser(${i})">Reject</button>`:''}
-      <button class="btn btn-sm" onclick="resetUserPassword(${i})" title="Reset password">🔑</button>
-      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="deleteUserAction(${i})" title="Delete user">🗑</button>
+      <button class="btn btn-sm" onclick="resetUserPassword(${i})" title="Reset password"><svg class="lic" viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg></button>
+      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="deleteUserAction(${i})" title="Delete user"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
     </td>
   </tr>`).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No users</p></div></td></tr>';
   paginateTable('adminUserBody');
@@ -3288,8 +3290,8 @@ function showPODetail(poNum) {
     ${po.remarks?`<div style="margin-top:1rem;"><div class="detail-section-title">Remarks</div><div style="font-size:13px;">${po.remarks}</div></div>`:''}
     <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-        <button class="btn btn-sm btn-primary" onclick="exportPOCSV('${po.poNumber}')">📥 Download CSV</button>
-        <button class="btn btn-sm" onclick="printPODetails('${po.poNumber}')">🖨 Print</button>
+        <button class="btn btn-sm btn-primary" onclick="exportPOCSV('${po.poNumber}')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Download CSV</button>
+        <button class="btn btn-sm" onclick="printPODetails('${po.poNumber}')"><svg class="lic" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Print</button>
       </div>
     </div>
   </div>`;
@@ -3433,9 +3435,9 @@ function adminView(stage, id){
 // Action-cell HTML for an admin table row: View · Edit · Delete (+ stage download lives in toolbar).
 function adminActions(stage, id){
   return `<div style="display:flex;gap:4px;">
-    <button class="btn btn-sm" onclick="adminView('${stage}','${id}')" title="View">👁</button>
-    <button class="btn btn-sm" onclick="adminEdit('${stage}','${id}')" title="Edit">✏️</button>
-    <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('${stage}','${id}')" title="Delete">🗑</button>
+    <button class="btn btn-sm" onclick="adminView('${stage}','${id}')" title="View"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <button class="btn btn-sm" onclick="adminEdit('${stage}','${id}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
+    <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('${stage}','${id}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
   </div>`;
 }
 
@@ -3480,7 +3482,7 @@ function adminEdit(stage, id){
   }).join('');
   const html=`<div class="form-grid">${body}</div>
     <div class="form-actions" style="margin-top:1rem;">
-      <button class="btn btn-primary" onclick="submitAdminEdit('${stage}','${id}')">💾 Save changes</button>
+      <button class="btn btn-primary" onclick="submitAdminEdit('${stage}','${id}')"><svg class="lic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save changes</button>
     </div>`;
   openPanel(`Edit ${s.label}`, rec[s.idField], html);
 }
