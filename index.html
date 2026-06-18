@@ -599,11 +599,35 @@ input, select, textarea, button { font-family: inherit; }
 .empty-state p { font-size: 14px; }
 
 /* ── RESPONSIVE ───────────────────────────────────── */
+.mobile-menu-btn {
+  display: none; position: fixed; top: 10px; left: 10px; z-index: 210;
+  width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); align-items: center; justify-content: center;
+  box-shadow: var(--shadow); cursor: pointer; color: var(--text);
+}
+.sidebar-overlay { display: none; }
 @media (max-width: 768px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
+  .form-grid, .form-grid.cols3, .form-grid.cols4 { grid-template-columns: 1fr; }
   .loom-grid { grid-template-columns: repeat(3, 1fr); }
-  .sidebar { display: none; }
+  .page-header { flex-direction: column; align-items: stretch; }
+  .page-header-actions { flex-wrap: wrap; }
+  .main { padding-top: 58px; }
+  .mobile-menu-btn { display: flex; }
+  /* Sidebar becomes an off-canvas slide-in drawer */
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 200;
+    transform: translateX(-100%); transition: transform .25s ease;
+    box-shadow: 6px 0 40px rgba(0,0,0,.3);
+  }
+  .app.sidebar-open .sidebar { transform: translateX(0); }
+  .app.sidebar-open .sidebar-overlay {
+    display: block; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 150;
+  }
+}
+@media (max-width: 460px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .loom-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ── PRINT ────────────────────────────────────────── */
@@ -625,9 +649,13 @@ input, select, textarea, button { font-family: inherit; }
     </div>
     <div class="login-right">
       <div class="login-box">
-        <div class="login-logo-wrap">
+        <div class="login-logo-wrap" style="flex-direction:column;gap:6px;">
           <div class="login-logo">
             <img src="pafabs_logo.png" alt="PA FABS" />
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:var(--brand);letter-spacing:-.3px;line-height:1;">PA FABS</div>
+            <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:3px;">Crafted in Weaving</div>
           </div>
         </div>
         <p class="login-heading">Sign in to your account</p>
@@ -739,6 +767,8 @@ input, select, textarea, button { font-family: inherit; }
 
 <!-- ════════════════════════════════════════════════════ ADMIN APP -->
 <div id="adminApp" class="app">
+  <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu"><svg class="lic" style="font-size:22px" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
@@ -1011,6 +1041,8 @@ input, select, textarea, button { font-family: inherit; }
 
 <!-- ════════════════════════════════════════════════════ USER APP -->
 <div id="userApp" class="app">
+  <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu"><svg class="lic" style="font-size:22px" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
@@ -1872,7 +1904,12 @@ async function completeRegistration() {
 // ════════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════════
+// Mobile off-canvas sidebar drawer
+function toggleSidebar(){ const a=document.querySelector('.app.active'); if(a) a.classList.toggle('sidebar-open'); }
+function closeSidebar(){ document.querySelectorAll('.app').forEach(a=>a.classList.remove('sidebar-open')); }
+
 function adminNav(page, btn) {
+  closeSidebar();
   document.querySelectorAll('#adminApp .nav-item').forEach(n=>n.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('#adminApp .page').forEach(p=>p.classList.remove('active'));
@@ -1892,6 +1929,7 @@ function adminNav(page, btn) {
 }
 
 function userNav(page, btn) {
+  closeSidebar();
   document.querySelectorAll('#userApp .nav-item').forEach(n=>n.classList.remove('active'));
   if(btn) btn.classList.add('active');
   document.querySelectorAll('#userApp .page').forEach(p=>p.classList.remove('active'));
