@@ -607,9 +607,9 @@ input, select, textarea, button { font-family: inherit; }
 }
 .sidebar-overlay { display: none; }
 @media (max-width: 768px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .form-grid, .form-grid.cols3, .form-grid.cols4 { grid-template-columns: 1fr; }
-  .loom-grid { grid-template-columns: repeat(3, 1fr); }
+  .stats-grid { grid-template-columns: 1fr 1fr !important; }
+  .form-grid, .form-grid.cols3, .form-grid.cols4 { grid-template-columns: 1fr !important; }
+  .loom-grid { grid-template-columns: repeat(3, 1fr) !important; }
   /* Any inline multi-column grid (dashboard side-by-side cards, etc.) → single column */
   [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
   .dynamic-row, .beam-entry-row { grid-template-columns: 1fr 1fr !important; }
@@ -629,8 +629,8 @@ input, select, textarea, button { font-family: inherit; }
   }
 }
 @media (max-width: 460px) {
-  .stats-grid { grid-template-columns: 1fr; }
-  .loom-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .loom-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 /* ── PRINT ────────────────────────────────────────── */
