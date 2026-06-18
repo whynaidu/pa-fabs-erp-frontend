@@ -855,21 +855,21 @@ input, select, textarea, button { font-family: inherit; }
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Production — metres woven / day (last 14 days)</div>
-          <canvas id="chartProduction" height="120"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="chartProduction"></canvas></div>
         </div>
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">PO Status</div>
-          <canvas id="chartPOStatus" height="200"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="chartPOStatus"></canvas></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.25rem;margin-bottom:1.5rem;">
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Loom Utilisation</div>
-          <canvas id="chartLooms" height="200"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="chartLooms"></canvas></div>
         </div>
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">Deliveries — metres / day (last 14 days)</div>
-          <canvas id="chartDeliveries" height="120"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="chartDeliveries"></canvas></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
@@ -1148,11 +1148,11 @@ input, select, textarea, button { font-family: inherit; }
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">My Production — metres / day (last 14 days)</div>
-          <canvas id="uChartProduction" height="120"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="uChartProduction"></canvas></div>
         </div>
         <div class="table-card" style="padding:1rem 1.25rem;">
           <div style="font-size:14px;font-weight:700;margin-bottom:.6rem;color:var(--text);">My PO Status</div>
-          <canvas id="uChartPOStatus" height="200"></canvas>
+          <div style="position:relative;height:220px;"><canvas id="uChartPOStatus"></canvas></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
@@ -3091,6 +3091,13 @@ function renderDashboardCharts(scope){
     makeChart('uChartPOStatus',{type:'doughnut',data:{labels:['Pending','In Progress','Complete'],datasets:[{data:poStatusCounts(DB.pos),backgroundColor:[GRAY,AMBER,GREEN]}]},options:pie()});
   }
 }
+
+// Re-render charts once everything (incl. Chart.js CDN) has loaded — covers the
+// case where the dashboard rendered before the library finished downloading.
+window.addEventListener('load', ()=>{
+  const a=document.querySelector('.app.active');
+  if(a && typeof Chart!=='undefined') renderDashboardCharts(a.id==='adminApp'?'admin':'user');
+});
 
 // ════════════════════════════════════════════════════════════════
 // PDF EXPORT — Delivery Challan
