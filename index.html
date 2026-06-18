@@ -613,6 +613,9 @@ input, select, textarea, button { font-family: inherit; }
   /* Any inline multi-column grid (dashboard side-by-side cards, etc.) → single column */
   [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
   .dynamic-row, .beam-entry-row { grid-template-columns: 1fr 1fr !important; }
+  .detail-grid { grid-template-columns: 1fr !important; }
+  /* Slide-out detail panel: full width and above the hamburger so nothing overlaps */
+  .detail-panel { width: 100% !important; max-width: 100%; z-index: 300; }
   .page-header { flex-direction: column; align-items: stretch; }
   .page-header-actions { flex-wrap: wrap; }
   .page { padding: 64px 1rem 1.5rem; }   /* top clearance for the fixed hamburger */
