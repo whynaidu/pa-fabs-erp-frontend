@@ -129,6 +129,7 @@ input, select, textarea, button { font-family: inherit; }
   margin: 0 auto 1.75rem; box-shadow: 0 16px 44px rgba(0,0,0,.4);
 }
 .login-brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+.login-illus { width: 300px; max-width: 78%; height: auto; margin: 0 auto 1.75rem; display: block; filter: drop-shadow(0 18px 44px rgba(0,0,0,.45)); }
 .login-brand-title { font-size: 42px; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -1px; }
 .login-brand-tagline { font-size: 18px; font-weight: 400; opacity: 0.9; margin-bottom: 2rem; font-style: italic; }
 .login-brand-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 2px; }
@@ -670,17 +671,43 @@ input, select, textarea, button { font-family: inherit; }
   <div class="login-container">
     <div class="login-left">
       <div class="login-left-content">
-        <div class="login-brand-logo"><img src="pafabs_logo.png" alt="PA FABS" /></div>
+        <svg class="login-illus" viewBox="0 0 420 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weaving loom illustration">
+          <defs>
+            <pattern id="weave" width="40" height="40" patternUnits="userSpaceOnUse">
+              <rect width="40" height="40" fill="#241019"/>
+              <rect x="5" y="-3" width="10" height="46" rx="5" fill="#ECDCBC"/>
+              <rect x="25" y="-3" width="10" height="46" rx="5" fill="#ECDCBC"/>
+              <rect x="-3" y="5" width="8" height="10" rx="5" fill="#2BA39A"/>
+              <rect x="15" y="5" width="28" height="10" rx="5" fill="#2BA39A"/>
+              <rect x="-3" y="25" width="28" height="10" rx="5" fill="#E2641E"/>
+              <rect x="35" y="25" width="8" height="10" rx="5" fill="#E2641E"/>
+            </pattern>
+          </defs>
+          <!-- top warp beam -->
+          <rect x="64" y="30" width="292" height="22" rx="11" fill="#7a5230"/>
+          <rect x="64" y="30" width="292" height="8" rx="4" fill="#a0703f"/>
+          <circle cx="64" cy="41" r="14" fill="#8a5e36"/><circle cx="356" cy="41" r="14" fill="#8a5e36"/>
+          <!-- warp threads feeding into the cloth -->
+          <g stroke="#ECDCBC" stroke-width="3" stroke-linecap="round" opacity=".9">
+            <line x1="98" y1="52" x2="98" y2="120"/><line x1="128" y1="52" x2="128" y2="120"/>
+            <line x1="158" y1="52" x2="158" y2="120"/><line x1="188" y1="52" x2="188" y2="120"/>
+            <line x1="218" y1="52" x2="218" y2="120"/><line x1="248" y1="52" x2="248" y2="120"/>
+            <line x1="278" y1="52" x2="278" y2="120"/><line x1="308" y1="52" x2="308" y2="120"/>
+          </g>
+          <!-- woven cloth swatch -->
+          <rect x="86" y="118" width="248" height="172" rx="14" fill="url(#weave)" stroke="#E8B731" stroke-width="3"/>
+          <!-- shuttle gliding across the shed -->
+          <line x1="48" y1="206" x2="372" y2="206" stroke="#ECDCBC" stroke-width="2" opacity=".45"/>
+          <path d="M150 206 C168 193 252 193 270 206 C252 219 168 219 150 206 Z" fill="#4a2e16"/>
+          <rect x="196" y="201" width="28" height="10" rx="5" fill="#ECDCBC"/>
+          <!-- bottom cloth beam -->
+          <rect x="64" y="298" width="292" height="22" rx="11" fill="#7a5230"/>
+          <rect x="64" y="298" width="292" height="8" rx="4" fill="#a0703f"/>
+          <circle cx="64" cy="309" r="14" fill="#8a5e36"/><circle cx="356" cy="309" r="14" fill="#8a5e36"/>
+        </svg>
         <h1 class="login-brand-title">PA FABS</h1>
         <p class="login-brand-tagline">Crafted in Weaving · Namakkal</p>
         <p class="login-brand-sub">Textile ERP System</p>
-        <div class="login-features">
-          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span><span class="login-feature-text">PO &amp; Order Management</span></div>
-          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span><span class="login-feature-text">18-Loom Production Tracking</span></div>
-          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><span class="login-feature-text">Warehouse &amp; Inventory</span></div>
-          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><span class="login-feature-text">Manufacturing &amp; QC</span></div>
-          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span><span class="login-feature-text">Delivery &amp; DC Slips</span></div>
-        </div>
       </div>
     </div>
     <div class="login-right">
