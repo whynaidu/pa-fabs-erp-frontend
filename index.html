@@ -98,21 +98,27 @@ input, select, textarea, button { font-family: inherit; }
   display: flex; width: 100%; min-height: 100vh; position: relative; z-index: 1;
 }
 .login-left {
-  /* Full-bleed Lord Murugan art — fills the whole left panel. */
-  flex: 1; background: #10204a;
-  display: flex; align-items: center; justify-content: center;
-  padding: 0; position: relative; overflow: hidden;
+  /* Professional dark textile-brand panel: deep maroon gradient + faint woven weave. */
+  flex: 1; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; padding: 3rem;
+  background:
+    radial-gradient(115% 90% at 0% 0%, rgba(200,16,46,.28), transparent 55%),
+    linear-gradient(155deg, #17171f 0%, #261520 52%, #3a0f1c 100%);
 }
-.login-art-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.login-left::before {
+  content: ""; position: absolute; inset: 0; opacity: .05; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(45deg, #fff 0 1.5px, transparent 1.5px 13px),
+    repeating-linear-gradient(-45deg, #fff 0 1.5px, transparent 1.5px 13px);
+}
 .login-left-content {
   position: relative; z-index: 1; text-align: center; color: white;
-  max-width: 450px;
+  max-width: 420px;
 }
 .login-brand-logo {
-  /* icon only — no background box, no border, no letters */
-  width: 130px; height: 130px; background: transparent;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 2rem;
+  width: 116px; height: 116px; background: #fff; padding: 14px;
+  border-radius: 24px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.75rem; box-shadow: 0 16px 44px rgba(0,0,0,.4);
 }
 .login-brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .login-brand-title { font-size: 42px; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -1px; }
@@ -655,7 +661,19 @@ input, select, textarea, button { font-family: inherit; }
 <div id="loginScreen">
   <div class="login-container">
     <div class="login-left">
-      <img class="login-art-img" src="login_art.jpg" alt="Lord Murugan" />
+      <div class="login-left-content">
+        <div class="login-brand-logo"><img src="pafabs_logo.png" alt="PA FABS" /></div>
+        <h1 class="login-brand-title">PA FABS</h1>
+        <p class="login-brand-tagline">Crafted in Weaving · Namakkal</p>
+        <p class="login-brand-sub">Textile ERP System</p>
+        <div class="login-features">
+          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span><span class="login-feature-text">PO &amp; Order Management</span></div>
+          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span><span class="login-feature-text">18-Loom Production Tracking</span></div>
+          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><span class="login-feature-text">Warehouse &amp; Inventory</span></div>
+          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><span class="login-feature-text">Manufacturing &amp; QC</span></div>
+          <div class="login-feature"><span class="login-feature-icon"><svg class="lic" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span><span class="login-feature-text">Delivery &amp; DC Slips</span></div>
+        </div>
+      </div>
     </div>
     <div class="login-right">
       <div class="login-box">
