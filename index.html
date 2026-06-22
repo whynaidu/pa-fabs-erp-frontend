@@ -953,7 +953,7 @@ input, select, textarea, button { font-family: inherit; }
           <button class="btn btn-sm" onclick="exportCSV('pos')"><svg class="lic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> CSV</button>
         </div>
         <table class="data-table" id="adminDashPOTable">
-          <thead><tr><th>PO Number</th><th>Design / Description</th><th>Customer</th><th>Reed×Pick</th><th>Order Qty</th><th>Cycles</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO Number</th><th>Design / Description</th><th>Customer</th><th>Reed×Pick</th><th>Order Qty</th><th>Cycles</th><th>Status</th><th>Date</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="adminDashPOBody"></tbody>
         </table>
       </div>
@@ -1009,7 +1009,7 @@ input, select, textarea, button { font-family: inherit; }
           </select>
         </div>
         <table class="data-table" id="allPOTable">
-          <thead><tr><th>PO Number</th><th>Description</th><th>Customer</th><th>Reed×Pick</th><th>Width</th><th>Order Qty</th><th>Cost/m</th><th>Cycles</th><th>Status</th><th>Order Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO Number</th><th>Description</th><th>Customer</th><th>Reed×Pick</th><th>Width</th><th>Order Qty</th><th>Cost/m</th><th>Cycles</th><th>Status</th><th>Order Date</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="allPOBody"></tbody>
         </table>
       </div>
@@ -1034,7 +1034,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminInwardTable')">
         </div>
         <table class="data-table" id="adminInwardTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Warp Rows</th><th>Weft Rows</th><th>Location</th><th>RM No.</th><th>Done</th><th>Date</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="adminInwardBody"></tbody>
         </table>
       </div>
@@ -1044,7 +1044,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminOutwardTable')">
         </div>
         <table class="data-table" id="adminOutwardTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Process</th><th>Operator</th><th>Warp Count</th><th>Warp Metres</th><th>Weft Count</th><th>Weft KG</th><th>Beams Exp.</th><th>Outward Date</th><th>Exp. Return</th><th>Done</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Process</th><th>Operator</th><th>Warp Count</th><th>Warp Metres</th><th>Weft Count</th><th>Weft KG</th><th>Beams Exp.</th><th>Outward Date</th><th>Exp. Return</th><th>Done</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="adminOutwardBody"></tbody>
         </table>
       </div>
@@ -1054,7 +1054,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminReturnTable')">
         </div>
         <table class="data-table" id="adminReturnTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Return Type</th><th>Beam IDs</th><th>Warp Metres</th><th>Cones</th><th>Operator</th><th>Receiver</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Return Type</th><th>Beam IDs</th><th>Warp Metres</th><th>Cones</th><th>Operator</th><th>Receiver</th><th>Date</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="adminReturnBody"></tbody>
         </table>
       </div>
@@ -1078,7 +1078,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search PO..." oninput="filterTable(this.value,'adminMfgTable')">
         </div>
         <table class="data-table" id="adminMfgTable">
-          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Total Mfg. (m)</th><th>Order Qty (m)</th><th>Balance (m)</th><th>Progress</th><th>Done</th><th>Log Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>PO No.</th><th>Description</th><th>Cycle</th><th>Loom No.</th><th>Beam ID</th><th>Today (m)</th><th>Total Mfg. (m)</th><th>Order Qty (m)</th><th>Balance (m)</th><th>Progress</th><th>Done</th><th>Log Date</th><th>Created By</th><th>Actions</th></tr></thead>
           <tbody id="adminMfgBody"></tbody>
         </table>
       </div>
@@ -1101,7 +1101,7 @@ input, select, textarea, button { font-family: inherit; }
           <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminDeliveryTable')">
         </div>
         <table class="data-table" id="adminDeliveryTable">
-          <thead><tr><th>DC Number</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>No. Pieces</th><th>Total Metres</th><th>Total Weight</th><th>Vehicle</th><th>Date</th><th>DC Slip</th></tr></thead>
+          <thead><tr><th>DC Number</th><th>PO No.</th><th>Description</th><th>Cycle</th><th>Customer</th><th>Reed×Pick</th><th>No. Pieces</th><th>Total Metres</th><th>Total Weight</th><th>Vehicle</th><th>Date</th><th>Created By</th><th>DC Slip</th></tr></thead>
           <tbody id="adminDeliveryBody"></tbody>
         </table>
       </div>
@@ -2075,6 +2075,12 @@ function userNav(page, btn) {
 // ════════════════════════════════════════════════════════════════
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function badge(cls, txt) { return `<span class="badge badge-${cls}">${txt}</span>`; }
+// Resolve a user id (submitted_by / user_id) to a readable name via DB.users.
+function userName(id){
+  if(!id) return '—';
+  const u=(DB.users||[]).find(x=>x.id===id);
+  return u ? (u.fullName||u.username||id) : id;
+}
 // Readable date — turns ISO "2026-06-18T00:00:00Z" into "18 Jun 2026".
 function fmtDate(v){
   if(!v) return '—';
@@ -3357,6 +3363,7 @@ function renderAdminDashboard() {
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
     <td>${fmtDate(po.orderDate)}</td>
+    <td>${userName(po.userId)}</td>
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -3365,7 +3372,7 @@ function renderAdminDashboard() {
         <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
       </div>
     </td>
-  </tr>`).join('') || '<tr><td colspan="9"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
   renderDashboardCharts('admin');
 }
 
@@ -3379,6 +3386,7 @@ function renderAllPOs() {
     <td>${DB.inwards.filter(i=>i.poNumber===po.poNumber).length}</td>
     <td>${po.status==='complete'?badge('green','Complete'):po.status==='in_progress'?badge('amber','In Progress'):badge('gray','Pending')}</td>
     <td>${fmtDate(po.orderDate)}</td>
+    <td>${userName(po.userId)}</td>
     <td>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-sm" onclick="showPODetail('${po.poNumber}')" title="View Details"><svg class="lic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -3387,7 +3395,7 @@ function renderAllPOs() {
         <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('po','${po.poNumber}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
       </div>
     </td>
-  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No POs yet. Create a PO from the PO Details section.</p></div></td></tr>';
   paginateTable('allPOBody');
 }
 
@@ -3400,8 +3408,9 @@ function renderAdminWarehouse() {
     <td>${i.rmNumber||'—'}</td>
     <td>${i.isDone?badge('green','Done'):badge('gray','Pending')}</td>
     <td>${fmtDate(i.entryDate)}</td>
+    <td>${userName(i.submittedBy)}</td>
     <td>${adminActions('inward',i.id)}</td>
-  </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No inward entries</p></div></td></tr>';
   document.getElementById('adminOutwardBody').innerHTML=DB.outwards.map(o=>`<tr>
     <td><strong>${o.poNumber}</strong></td><td>${poDescMap[o.poNumber]||'—'}</td><td>${badge('purple','Cycle '+o.cycleNumber)}</td>
     <td>${badge(o.processType==='warping'?'blue':'green',o.processType)}</td>
@@ -3409,8 +3418,9 @@ function renderAdminWarehouse() {
     <td>${o.weftCount||'—'}</td><td>${nz(o.weftKg,' kg')}</td><td>${o.beamsExpected||'—'}</td>
     <td>${fmtDate(o.outwardDate)}</td><td>${fmtDate(o.expectedReturn)}</td>
     <td>${o.isDone?badge('green','Done'):badge('gray','Pending')}</td>
+    <td>${userName(o.submittedBy)}</td>
     <td>${adminActions('outward',o.id)}</td>
-  </tr>`).join('') || '<tr><td colspan="14"><div class="empty-state"><p>No outward entries</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="15"><div class="empty-state"><p>No outward entries</p></div></td></tr>';
   document.getElementById('adminReturnBody').innerHTML=DB.returns.map(r=>`<tr>
     <td><strong>${r.poNumber}</strong></td><td>${poDescMap[r.poNumber]||'—'}</td><td>${badge('purple','Cycle '+r.cycleNumber)}</td>
     <td>${badge(r.returnType==='warping_return'?'blue':'green',r.returnType.replace('_',' '))}</td>
@@ -3418,8 +3428,9 @@ function renderAdminWarehouse() {
     <td>${r.returnCones||'—'}</td>
     <td>${r.operatorName||'—'}</td><td>${r.receiverName||'—'}</td>
     <td>${fmtDate(r.returnDate)}</td>
+    <td>${userName(r.submittedBy)}</td>
     <td>${adminActions('return',r.id)}</td>
-  </tr>`).join('') || '<tr><td colspan="11"><div class="empty-state"><p>No return entries</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No return entries</p></div></td></tr>';
   ['adminInwardBody','adminOutwardBody','adminReturnBody'].forEach(id=>paginateTable(id));
 }
 
@@ -3446,8 +3457,9 @@ function renderAdminMfg() {
     <td><div class="progress" style="width:80px;display:inline-block;"><div class="progress-bar" style="width:${Math.min(100,Math.round(m.totalManufactured/((DB.pos.find(p=>p.poNumber===m.poNumber)||{}).orderQty||1)*100))}%"></div></div></td>
     <td>${m.isDone?badge('green','Done'):badge('amber','Running')}</td>
     <td>${fmtDate(m.logDate)}</td>
+    <td>${userName(m.submittedBy)}</td>
     <td>${adminActions('mfg',m.id)}</td>
-  </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No manufacturing log</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="14"><div class="empty-state"><p>No manufacturing log</p></div></td></tr>';
   paginateTable('adminMfgBody');
 }
 
@@ -3460,12 +3472,13 @@ function renderAdminDelivery() {
     <td>${d.totalWeight!=null?d.totalWeight+' kg':'—'}</td>
     <td>${d.vehicleNumber||'—'}</td>
     <td>${fmtDate(d.deliveryDate)}</td>
+    <td>${userName(d.submittedBy)}</td>
     <td><div style="display:flex;gap:4px;">
       <button class="btn btn-sm btn-outline-brand" onclick="showDCSlip('${d.id}')">DC Slip</button>
       <button class="btn btn-sm" onclick="adminEdit('delivery','${d.id}')" title="Edit"><svg class="lic" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6l-3.6 1 1-3.6z"/></svg></button>
       <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="adminDelete('delivery','${d.id}')" title="Delete"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
     </div></td>
-  </tr>`).join('') || '<tr><td colspan="12"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
+  </tr>`).join('') || '<tr><td colspan="13"><div class="empty-state"><p>No deliveries yet</p></div></td></tr>';
   paginateTable('adminDeliveryBody');
 }
 
