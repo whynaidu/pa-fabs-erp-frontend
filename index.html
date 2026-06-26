@@ -736,11 +736,9 @@ input, select, textarea, button { font-family: inherit; }
         </div>
         <button class="login-btn" onclick="doLogin()">Sign In →</button>
         <div style="text-align:center;margin-top:1rem;">
-          <button class="link-btn" onclick="showRegister()">New account registration</button>
-          <span style="color:var(--text3);margin:0 .4rem;">·</span>
           <button class="link-btn" onclick="showForgot()">Forgot password?</button>
         </div>
-        <p class="login-hint">Demo: admin/admin123 &nbsp;·&nbsp; user/user123 &nbsp;·&nbsp; GSTIN: 33ERVPM7456N1ZP</p>
+        <p class="login-hint">GSTIN: 33ERVPM7456N1ZP &nbsp;·&nbsp; Accounts are created by your administrator</p>
       </div>
     </div>
   </div>
@@ -1112,11 +1110,31 @@ input, select, textarea, button { font-family: inherit; }
       <div class="page-header">
         <div class="page-header-left">
           <h1 class="page-title">User Management</h1>
-          <p class="page-sub">Approve/Reject registrations · Manage roles</p>
+          <p class="page-sub">Create users &amp; admins · Enable / disable · Reset passwords</p>
+        </div>
+      </div>
+      <div class="form-card" style="border:2px solid var(--brand);">
+        <div class="form-section-title" style="color:var(--brand);">➕ Create New User</div>
+        <div class="form-grid cols3">
+          <div class="form-group"><label>Full Name <span class="field-required">*</span></label><input type="text" id="cuFullName" placeholder="e.g. Ramesh Kumar" /></div>
+          <div class="form-group"><label>Username <span class="field-required">*</span></label><input type="text" id="cuUsername" placeholder="login username" /></div>
+          <div class="form-group"><label>Email <span class="field-required">*</span></label><input type="email" id="cuEmail" placeholder="name@company.com" /></div>
+          <div class="form-group"><label>Password <span class="field-required">*</span></label><input type="password" id="cuPassword" placeholder="Min 8 characters" /></div>
+          <div class="form-group"><label>Role <span class="field-required">*</span></label>
+            <select id="cuRole"><option value="user">Normal User (Staff)</option><option value="admin">Admin</option></select>
+          </div>
+          <div class="form-group"><label>Department</label><input type="text" id="cuDepartment" placeholder="e.g. Production" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="clearCreateUser()">Clear</button>
+          <button class="btn btn-primary" onclick="createUser()">➕ Create User</button>
         </div>
       </div>
       <div class="table-card">
-        <div class="table-toolbar"><span class="table-toolbar-title">Pending Approvals &amp; All Users</span></div>
+        <div class="table-toolbar">
+          <span class="table-toolbar-title">All Users</span>
+          <input class="search-input" type="text" placeholder="Search..." oninput="filterTable(this.value,'adminUserTable')">
+        </div>
         <table class="data-table" id="adminUserTable">
           <thead><tr><th>Full Name</th><th>Username</th><th>Email</th><th>Department</th><th>Role</th><th>Status</th><th>Registered</th><th>Actions</th></tr></thead>
           <tbody id="adminUserBody"></tbody>
@@ -3483,18 +3501,56 @@ function renderAdminDelivery() {
 }
 
 function renderUserMgmt() {
-  document.getElementById('adminUserBody').innerHTML=DB.users.map((u,i)=>`<tr>
-    <td>${u.fullName||'—'}</td><td>${u.username||'—'}</td><td>${u.email||'—'}</td>
-    <td>${u.department||'—'}</td><td>${u.role||'—'}</td>
-    <td>${u.status==='approved'?badge('green','Approved'):u.status==='pending'?badge('amber','Pending'):badge('red','Rejected')}</td>
+  const meId=(DB.currentUserObj||{}).id;
+  document.getElementById('adminUserBody').innerHTML=DB.users.map((u,i)=>{
+    const isMe=u.id===meId, isDefaultAdmin=u.username==='admin', active=u.status==='approved';
+    const statusBadge = active?badge('green','Active'):u.status==='pending'?badge('amber','Pending'):badge('red','Disabled');
+    const protectedAcct = isMe || isDefaultAdmin;
+    const toggleBtn = protectedAcct ? '' : (active
+      ? `<button class="btn btn-sm" style="border-color:var(--amber);color:var(--amber);" onclick="disableUser(${i})" title="Disable"><svg class="lic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg></button>`
+      : `<button class="btn btn-sm btn-success" onclick="enableUser(${i})" title="Enable"><svg class="lic" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>`);
+    const deleteBtn = protectedAcct ? '' :
+      `<button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="deleteUserAction(${i})" title="Delete user"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>`;
+    return `<tr>
+    <td>${u.fullName||'—'}${isMe?' '+badge('blue','you'):''}</td><td>${u.username||'—'}</td><td>${u.email||'—'}</td>
+    <td>${u.department||'—'}</td><td>${u.role==='admin'?badge('purple','Admin'):badge('gray','User')}</td>
+    <td>${statusBadge}</td>
     <td>${fmtDate(u.createdAt)}</td>
     <td><div style="display:flex;gap:4px;align-items:center;">
-      ${u.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveUser(${i})" title="Approve"><svg class="lic" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button><button class="btn btn-sm" style="border-color:var(--brand);color:var(--brand);" onclick="rejectUser(${i})" title="Reject"><svg class="lic" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg></button>`:''}
+      ${toggleBtn}
       <button class="btn btn-sm" onclick="resetUserPassword(${i})" title="Reset password"><svg class="lic" viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg></button>
-      <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="deleteUserAction(${i})" title="Delete user"><svg class="lic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+      ${deleteBtn}
+      ${protectedAcct?'<span style="font-size:11px;color:var(--text3);">protected</span>':''}
     </div></td>
-  </tr>`).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No users</p></div></td></tr>';
+  </tr>`;}).join('') || '<tr><td colspan="8"><div class="empty-state"><p>No users</p></div></td></tr>';
   paginateTable('adminUserBody');
+}
+async function createUser(){
+  const v=id=>(document.getElementById(id).value||'').trim();
+  const fullName=v('cuFullName'), username=v('cuUsername'), email=v('cuEmail');
+  const password=document.getElementById('cuPassword').value, role=document.getElementById('cuRole').value, department=v('cuDepartment');
+  if(!fullName||!username||!email||!password){showToast('Full name, username, email and password are required');return;}
+  if(password.length<8){showToast('Password must be at least 8 characters');return;}
+  try{
+    await fetchAPI('/users',{method:'POST',body:JSON.stringify({fullName,username,email,password,role,department:department||null})});
+    DB.users=await fetchAPI('/users'); renderUserMgmt(); clearCreateUser();
+    showToast((role==='admin'?'Admin':'User')+' created: '+username);
+  }catch(e){ showToast('Create failed: '+e.message); }
+}
+function clearCreateUser(){
+  ['cuFullName','cuUsername','cuEmail','cuPassword','cuDepartment'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('cuRole').selectedIndex=0;
+}
+async function enableUser(idx){
+  const u=DB.users[idx]; if(!u||!u.id) return;
+  try{ await fetchAPI(`/users/${u.id}/approve`,{method:'PUT'}); DB.users=await fetchAPI('/users'); renderUserMgmt(); showToast(`${u.username} enabled`); }
+  catch(e){ showToast('Failed: '+e.message); }
+}
+async function disableUser(idx){
+  const u=DB.users[idx]; if(!u||!u.id) return;
+  if(!confirm(`Disable "${u.fullName||u.username}"? They won't be able to sign in.`)) return;
+  try{ await fetchAPI(`/users/${u.id}/reject`,{method:'PUT'}); DB.users=await fetchAPI('/users'); renderUserMgmt(); showToast(`${u.username} disabled`); }
+  catch(e){ showToast('Failed: '+e.message); }
 }
 async function deleteUserAction(idx){
   const u=DB.users[idx]; if(!u||!u.id){showToast('User id missing');return;}
